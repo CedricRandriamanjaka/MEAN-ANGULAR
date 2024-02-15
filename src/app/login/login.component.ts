@@ -3,6 +3,8 @@ import { ActivatedRoute } from '@angular/router';
 import { IAlert } from '../sections/alerts-section/alerts-section.component'; // Importez l'interface IAlert
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { CookieService } from 'ngx-cookie-service';
+import { AuthService } from '../shared/navbar/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -14,7 +16,7 @@ export class LoginComponent implements OnInit {
   focus1;
   email: string;
   motdepasse: string;
-  constructor(private route: ActivatedRoute, private http: HttpClient, private router: Router) { }
+  constructor(private route: ActivatedRoute,private cookieService: CookieService,private http: HttpClient, private router: Router,private authService: AuthService) { }
 
   public alerts: Array<IAlert> = [];
   private backup: Array<IAlert>;
@@ -42,7 +44,9 @@ export class LoginComponent implements OnInit {
     this.http.post<any>('http://localhost:3000/api/utilisateur/connection', user)
       .subscribe(
         response => {
-          if (response.email) {
+          
+          if (!response.messageErreur) {
+            
             if (response.role === 1) {
               this.router.navigate(['/home']);
             }
@@ -71,6 +75,11 @@ export class LoginComponent implements OnInit {
           }
           this.backup = this.alerts.map((alert: IAlert) => Object.assign({}, alert));
           console.log(response);
+          this.cookieService.set('userEmail', response.email);
+          this.cookieService.set('userId', response._id);
+          this.cookieService.set('userRole', response.role);
+    this.authService.updateLoggedInStatus();
+
         },
         error => {
           // Si la création de compte échoue, affichez un message d'erreur
