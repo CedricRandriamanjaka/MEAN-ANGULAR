@@ -105,12 +105,22 @@
           </a>
         </li> -->
         <li class="nav-item d-none d-lg-block ml-lg-4">
-          <a href="#/login" class="btn btn-neutral btn-icon">
-            <span class="btn-inner--icon">
-              <!-- <i class="fa fa-cloud-download mr-2"></i> -->
-            </span>
-            <span class="nav-link-inner--text">se connecter</span>
-          </a>
+          <ng-container *ngIf="!isLoggedIn; else loggedOutTemplate">
+            <a href="#/login" class="btn btn-neutral btn-icon">
+              <span class="btn-inner--icon">
+                <!-- <i class="fa fa-cloud-download mr-2"></i> -->
+              </span>
+              <span class="nav-link-inner--text">Se connecter</span>
+            </a>
+          </ng-container>
+          <ng-template #loggedOutTemplate>
+            <a href="#/login" class="btn btn-neutral btn-icon">
+              <span class="btn-inner--icon">
+                <!-- <i class="fa fa-user mr-2"></i> -->
+              </span>
+              <span class="nav-link-inner--text" (click)="logout()">Profil / Déconnexion</span>
+            </a>
+          </ng-template>
         </li>
       </ul>
     </div>
