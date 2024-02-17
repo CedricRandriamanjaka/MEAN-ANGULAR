@@ -108,18 +108,28 @@
           <ng-container *ngIf="!isLoggedIn; else loggedOutTemplate">
             <a href="#/login" class="btn btn-neutral btn-icon">
               <span class="btn-inner--icon">
-                <!-- <i class="fa fa-cloud-download mr-2"></i> -->
+                <i class="fa fa-user mr-2"></i>
               </span>
               <span class="nav-link-inner--text">Se connecter</span>
             </a>
           </ng-container>
           <ng-template #loggedOutTemplate>
-            <a href="#/login" class="btn btn-neutral btn-icon">
-              <span class="btn-inner--icon">
-                <!-- <i class="fa fa-user mr-2"></i> -->
-              </span>
-              <span class="nav-link-inner--text" (click)="logout()">Profil / Déconnexion</span>
-            </a>
+            <ul class="navbar-nav navbar-nav-hover align-items-lg-center">
+              <li class="nav-item dropdown">
+                <a class="nav-link no-caret" data-toggle="dropdown" role="button">
+                  <i class="fa fa-user mr-2"></i>
+                  <span class="nav-link-inner--text">Profile</span>
+                </a>
+                <div class="dropdown-menu">
+                  <a [routerLink]="['/user-profile']" class="dropdown-item">Mon profile</a>
+                  <!-- <a [routerLink]="['/landing']" class="dropdown-item">Mon profile</a> -->
+                  <!-- <a [routerLink]="['/user-profile']" class="dropdown-item">se deconnectee</a> -->
+                  <a href="#/login" class="dropdown-item ">
+                    <span class="btn btn-danger btn-icon" (click)="logout()">se deconnectee</span>
+                  </a>
+                </div>
+              </li>
+            </ul>
           </ng-template>
         </li>
       </ul>
