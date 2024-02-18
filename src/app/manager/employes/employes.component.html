@@ -12,7 +12,7 @@
             <input type="textearea" placeholder="Prénom" [(ngModel)]="prenom" class="form-control form-control-alternative" />
           </div>
           <div class="col-lg-4 col-sm-4 form-group">
-            <input type="text" placeholder="Email" [(ngModel)]="email" class="form-control form-control-alternative" />
+            <input type="email" placeholder="Email" [(ngModel)]="email" class="form-control form-control-alternative" />
           </div>
           <div class="col-lg-4 col-sm-4 form-group" [ngClass]="{'focused':focus===true}">
             <input class="form-control datepicker" placeholder="Date de naissance" id="date" name="dp1" [(ngModel)]="date" ngbDatepicker #d1="ngbDatepicker" (click)="d1.toggle()" (focus)="focus=true" (blur)="focus=false" type="text" autocomplete="off"/>
@@ -43,8 +43,6 @@
     </div>
   </div>
 
-  <p>{{ formattedDate }}</p>
-
 
   <section class="section section-lg">
     <div class="container">
@@ -60,19 +58,13 @@
             <div class="pt-4 text-center">
               <h5 class="title">
                 <span class="d-block mb-1">{{employe.nom}} {{employe.prenom}}</span>
-                <small class="h6 text-muted">{{employe.email}}</small>
-                <small class="h6 text-muted">{{employe.dateNaissance}}</small>
+                <p><small class="h6 text-muted">{{employe.email}}</small></p>
+                <p><small class="h6 text-muted">{{employe.dateNaissance}}</small></p>
               </h5>
               <div class="mt-3">
-                <a href="javascript:void(0)" class="btn btn-warning btn-icon-only rounded-circle">
-                  <i class="fa fa-twitter"></i>
-                </a>
-                <a href="javascript:void(0)" class="btn btn-warning btn-icon-only rounded-circle">
-                  <i class="fa fa-facebook"></i>
-                </a>
-                <a href="javascript:void(0)" class="btn btn-warning btn-icon-only rounded-circle">
-                  <i class="fa fa-dribbble"></i>
-                </a>
+                <button (click)="open(classic1, 'modal_mini', 'sm', employe)" class="btn btn-sm btn-primary">Modifier</button>
+                <button (click)="deleteEmployee(employe._id)" class="btn btn-sm btn-warning">Supprimer</button>
+    
               </div>
             </div>
           </div>
@@ -80,4 +72,61 @@
       </div>
     </div>
   </section>
+
+
+  <!-- Modal -->
+  <div class="col-md-4">
+    <ng-template #classic1 let-c="close" let-d="dismiss">
+      <div class="modal-content">
+        <div class="modal-body p-0">
+          <div class="card bg-secondary shadow border-0">
+            
+            <div class="card-body px-lg-5 py-lg-5">
+              <div class="text-center text-muted mb-4">
+                <small>Modifier Employe</small>
+              </div>
+              <form role="form" #serviceForm="ngForm">
+                <div class="form-group mb-3" [ngClass]="{'focused':focus2===true}">
+                  <div class="input-group input-group-alternative">
+                    <input class="form-control" [placeholder]="nomField" [(ngModel)]="nomField" type="text" (focus)="focus2=true" (blur)="focus2=false">
+                  </div>
+                </div>
+                <div class="form-group mb-3" [ngClass]="{'focused':focus3===true}">
+                    <div class="input-group input-group-alternative">
+                      <input class="form-control" [placeholder]="prenomField" [(ngModel)]="prenomField" type="text" (focus)="focus3=true" (blur)="focus3=false">
+                    </div>
+                  </div>
+                  <div class="form-group mb-3" [ngClass]="{'focused':focus4===true}">
+                    <div class="input-group input-group-alternative">
+                      <input class="form-control" [placeholder]="emailField" type="email" [(ngModel)]="emailField" (focus)="focus4=true" (blur)="focus4=false">
+                    </div>
+                  </div>
+
+                    <div class="input-group input-group-alternative mb-3">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="ni ni-single-02"></i></span>
+                      </div>
+                      <select class="form-control" [placeholder]="genreField" [(ngModel)]="genreField">
+                        <option value="1">Masculin</option>
+                        <option value="2">Féminin</option>
+                        <option value="3">Autre</option>
+                      </select>
+                    </div>
+
+                  <div class="form-group mb-3" [ngClass]="{'focused':focus6===true}">
+                    <div class="input-group input-group-alternative">
+                        <input class="form-control datepicker" [placeholder]="dateNaissanceField" id="date" name="dp1" [(ngModel)]="dateNaissanceField" ngbDatepicker #d1="ngbDatepicker" (click)="d1.toggle()" (focus)="focus6=true" (blur)="focus6=false" type="text" autocomplete="off"/>
+                    </div>
+                  </div>
+            
+                <div class="text-center">
+                  <button type="button" (click)="updateEmployee()" class="btn btn-primary my-4">Modifier</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </div>
 
