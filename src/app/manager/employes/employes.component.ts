@@ -12,11 +12,11 @@ import { config } from 'src/app/config/config';
 })
 export class EmployesComponent implements OnInit {
 
-  nom: string;
-  prenom: string;
-  email: string;
-  date: string;
-  genre: string;
+  nom: string = "";
+  prenom: string = "";
+  email: string = "";
+  date: string = "";
+  genre: string = "";
   focus: boolean = false;
 
   employees: any = [];
@@ -41,6 +41,10 @@ export class EmployesComponent implements OnInit {
       this.afficherAlerteChamp = true;
     }
 
+    if(new Date(date) > new Date()) {
+      this.afficherAlerteDate = true;
+    }
+
     else {
 
       var dataObject = {
@@ -62,6 +66,8 @@ export class EmployesComponent implements OnInit {
           alert('Employe ajouté');
 
       });
+
+      this.getAllEmployees();
     }
 
   }

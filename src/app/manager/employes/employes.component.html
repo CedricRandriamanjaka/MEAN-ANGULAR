@@ -33,12 +33,12 @@
       </div>
 
       
-      <!-- <div *ngFor="let alert of alerts">
+      <div *ngFor="let alert of alerts">
         <c-alert [type]="alert.type" [strong]="alert.strong" [message]="alert.message" [icon]="alert.icon"></c-alert>
       </div>
-      <c-alert color="danger" *ngIf="afficherAlerteDate">La date de début est postérieure à la date de fin.</c-alert>
+      <c-alert color="danger" *ngIf="afficherAlerteDate">La date de naissance est postérieure à la date d'aujourd'hui.</c-alert>
       <c-alert color="danger" *ngIf="afficherAlerteChamp">Veuillez remplir tous les champs.</c-alert>
-      <c-alert color="danger" *ngIf="afficherAlerteNumber">Numberrr.</c-alert>-->
+
       <button class="btn btn-1 btn-primary" (click)="addEmploye()" type="button">Ajouter</button> 
     </div>
   </div>
