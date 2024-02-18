@@ -54,9 +54,15 @@
             <div class="row justify-content-center">
               <div class="col-lg-9">
                 <h6>Mes préférences <button class="btn btn-sm btn-icon btn-primary" (click)="open(classic, 'Notification', 'sm')">
-                  <i class="fa fa-pencil"></i> <!-- Utilisez une icône appropriée pour la modification -->
+                  <i class="fa fa-pencil"></i>
                 </button></h6>
-                
+                <div class="row">
+                  <div class="col-lg-3 col-sm-6 mt-3 mt-md-0" *ngFor="let competence of competencesUtilisateur">
+                      <button style="border: none;" class="badge badge-pill badge-success text-uppercase">
+                           {{ competence.nomCompetence }} 
+                      </button>
+                    </div>                  
+                </div>
               </div>
             </div>
           </div>
@@ -71,16 +77,71 @@
                   </button>
                 </div>
                 <div class="modal-body">
+                  <h6>mes preferences</h6>
                   <div class="row">
-                    <div class="col-lg-4 col-sm-6 mt-4 mt-md-0" *ngFor="let competence of competencesUtilisateur">
+                    <div class="col-lg-3 col-sm-6 mt-3 mt-md-0" *ngFor="let competence of competencesUtilisateur">
                         <button style="border: none;" class="badge badge-pill badge-success text-uppercase">
                              {{ competence.nomCompetence }}   <i class="fa fa-trash" style="color: red;cursor: pointer;" (click)="supprimerCompetenceUtilisateur(competence._id)"></i>
                         </button>
                       </div>                  
                   </div>
-                  
+                  <hr>
+                  <h6>les preference disponible</h6>  
                   <div class="row">
-                      <div class="col-lg-4 col-sm-6 mt-4 mt-md-0" *ngFor="let competence of competences; let i = index">
+                    <div class="col-lg-3 col-sm-6 mt-3 mt-md-0" *ngFor="let competence of competences; let i = index">
+                          <button style="border: none;cursor: pointer;" class="badge badge-pill badge-primary text-uppercase" (click)="ajouterCompetenceUtilisateur(competence._id)">
+                              {{ competence.nomCompetence }}
+                          </button>
+                      </div>
+                  </div>
+                </div>
+
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-link ml-auto" data-dismiss="modal" (click)="c('Close click')">fermer</button>
+                </div>
+              </div>
+            </ng-template>
+          </div>
+
+          <div class="mt-5 py-5 border-top text-center">
+            <div class="row justify-content-center">
+              <div class="col-lg-9">
+                <h6>Mes employer favorie <button class="btn btn-sm btn-icon btn-primary" (click)="open(fav, 'Notification', 'sm')">
+                  <i class="fa fa-pencil"></i>
+                </button></h6>
+                <div class="row">
+                  <div class="col-lg-3 col-sm-6 mt-3 mt-md-0" *ngFor="let competence of competencesUtilisateur">
+                      <button style="border: none;" class="badge badge-pill badge-success text-uppercase">
+                           {{ competence.nomCompetence }} 
+                      </button>
+                    </div>                  
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-md-4">
+            <ng-template #fav let-c="close" let-d="dismiss">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h6 class="modal-title" id="modal-title-default">personnaliser vos favorie</h6>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="d('Cross click')">
+                    <span aria-hidden="true">×</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <h6>mes favories</h6>
+                  <div class="row">
+                    <div class="col-lg-3 col-sm-6 mt-3 mt-md-0" *ngFor="let competence of competencesUtilisateur">
+                        <button style="border: none;" class="badge badge-pill badge-success text-uppercase">
+                             {{ competence.nomCompetence }}   <i class="fa fa-trash" style="color: red;cursor: pointer;" (click)="supprimerCompetenceUtilisateur(competence._id)"></i>
+                        </button>
+                      </div>                  
+                  </div>
+                  <hr>
+                  <h6>nos employer</h6>  
+                  <div class="row">
+                    <div class="col-lg-3 col-sm-6 mt-3 mt-md-0" *ngFor="let competence of competences; let i = index">
                           <button style="border: none;cursor: pointer;" class="badge badge-pill badge-primary text-uppercase" (click)="ajouterCompetenceUtilisateur(competence._id)">
                               {{ competence.nomCompetence }}
                           </button>

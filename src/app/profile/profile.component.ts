@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, EventEmitter } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CookieService } from 'ngx-cookie-service';
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
@@ -9,6 +9,9 @@ import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
     styleUrls: ['./profile.component.scss']
 })
 export class ProfileComponent implements OnInit {
+// Déclarez un EventEmitter pour mettre à jour les compétences de l'utilisateur
+competencesUpdated: EventEmitter<any> = new EventEmitter<any>();
+
     closeResult: string;
     utilisateur: any;
     competences: any = [];
@@ -18,6 +21,11 @@ export class ProfileComponent implements OnInit {
     constructor(private modalService: NgbModal, private http: HttpClient, private cookieService: CookieService) { }
 
     ngOnInit() {
+// Abonnez-vous à l'événement pour mettre à jour les compétences de l'utilisateur localement
+this.competencesUpdated.subscribe((competences: any) => {
+    this.competencesUtilisateur = competences;
+});
+
         const userId = this.cookieService.get('userId');
         if (userId) { // Vérifiez si userId est défini pour éviter les requêtes inutiles
             this.getUtilisateur(userId);
@@ -65,32 +73,73 @@ export class ProfileComponent implements OnInit {
             );
     }
 
+    // ajouterCompetenceUtilisateur(competenceId: string): void {
+    //     const userId = this.utilisateur._id;
+    //     this.http.post(this.ApiUrl + 'profilEmployeretClient/competences/ajout/' + userId, { competenceID: competenceId })
+    //         .subscribe(
+    //             (data) => {
+    //                 console.log('Compétence ajoutée avec succès à l\'utilisateur:', data);
+    //                 // Actualiser la liste des compétences de l'utilisateur après l'ajout
+    //                 this.getCompetencesUtilisateur(userId);
+    //             },
+    //             (error) => {
+    //                 console.error('Erreur lors de l\'ajout de la compétence à l\'utilisateur:', error);
+    //             }
+    //         );
+    // }
+
+    // supprimerCompetenceUtilisateur(competenceId: string): void {
+    //     const userId = this.utilisateur._id;
+    //     this.http.post(this.ApiUrl + 'profilEmployeretClient/competences/supp/' + userId, { competenceID: competenceId })
+    //         .subscribe(
+    //             (data) => {
+    //                 console.log('Compétence supprimer avec succès à l\'utilisateur:', data);
+    //                 // Actualiser la liste des compétences de l'utilisateur après l'ajout
+    //                 this.getCompetencesUtilisateur(userId);
+    //             },
+    //             (error) => {
+    //                 console.error('Erreur lors de la suppresion de la compétence à l\'utilisateur:', error);
+    //             }
+    //         );
+    // }
+
     ajouterCompetenceUtilisateur(competenceId: string): void {
         const userId = this.utilisateur._id;
+        const competenceToAdd = this.competences.find(comp => comp._id === competenceId); // Trouver la compétence dans la liste complète des compétences
+    
         this.http.post(this.ApiUrl + 'profilEmployeretClient/competences/ajout/' + userId, { competenceID: competenceId })
             .subscribe(
                 (data) => {
-                    console.log('Compétence ajoutée avec succès à l\'utilisateur:', data);
-                    // Actualiser la liste des compétences de l'utilisateur après l'ajout
-                    this.getCompetencesUtilisateur(userId);
+                    if(data){
+
+                        // Mise à jour locale des compétences de l'utilisateur
+                        if (competenceToAdd) {
+                            this.competencesUtilisateur.push(competenceToAdd); // Ajouter la compétence à la liste locale si elle existe
+                        }
+                        this.competencesUpdated.emit(this.competencesUtilisateur); // Émettre l'événement avec les données mises à jour
+                        console.log('Compétences utilisateur mises à jour:', JSON.stringify(this.competencesUtilisateur));
+                    }
                 },
                 (error) => {
                     console.error('Erreur lors de l\'ajout de la compétence à l\'utilisateur:', error);
                 }
             );
     }
+    
+    
 
     supprimerCompetenceUtilisateur(competenceId: string): void {
         const userId = this.utilisateur._id;
         this.http.post(this.ApiUrl + 'profilEmployeretClient/competences/supp/' + userId, { competenceID: competenceId })
             .subscribe(
                 (data) => {
-                    console.log('Compétence supprimer avec succès à l\'utilisateur:', data);
-                    // Actualiser la liste des compétences de l'utilisateur après l'ajout
-                    this.getCompetencesUtilisateur(userId);
+                    console.log('Compétence supprimée avec succès à l\'utilisateur:', data);
+                    // Mise à jour locale des compétences de l'utilisateur
+                    this.competencesUtilisateur = this.competencesUtilisateur.filter(comp => comp._id !== competenceId); // Supprimez la compétence de la liste locale
+                    this.competencesUpdated.emit(this.competencesUtilisateur); // Émettez l'événement avec les données mises à jour
                 },
                 (error) => {
-                    console.error('Erreur lors de la suppresion de la compétence à l\'utilisateur:', error);
+                    console.error('Erreur lors de la suppression de la compétence à l\'utilisateur:', error);
                 }
             );
     }
