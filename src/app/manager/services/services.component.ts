@@ -39,13 +39,15 @@ export class ServicesComponent implements OnInit {
   // model : NgbDate;
   model1: NgbDate;
 
+  idService: string;
   intituleField: string;
   descriptionField: string;
-  dateDebutField: string;
-  dateFinField: string;
+  dateDebutField: any = "";
+  dateFinField: any = "";
   prixField: string;
   dureeField: string;
   commissionField: string;
+  competencesField: any = [];
 
   constructor(private http: HttpClient, private modalService: NgbModal) { }
 
@@ -141,7 +143,7 @@ export class ServicesComponent implements OnInit {
   }
 
   open(content, type, modalDimension, service) {
-    console.log(service.intitule)
+    console.log(service.nom)
     if (modalDimension === 'sm' && type === 'modal_mini') {
         this.modalService.open(content, { windowClass: 'modal-mini', size: 'sm', centered: true }).result.then((result) => {
             this.closeResult = `Closed with: ${result}`;
@@ -163,13 +165,32 @@ export class ServicesComponent implements OnInit {
         
     }
 
+    // console.log('service.dateDebutField : ', service.dateDebutField);
+
+    this.idService = service._id;
     this.intituleField = service.nom;
     this.descriptionField = service.description;
     this.prixField = service.prix;
     this.dureeField = service.duree;
     this.commissionField = service.commission;
-    this.dateDebutField = service.dateDebut;
-    this.dateFinField = service.dateFin;
+    if(service.dateDebut !== null && service.dateFin !== null ) {
+      this.dateDebutField = service.dateDebut.split("T")[0];
+      this.dateFinField = service.dateFin.split("T")[0];
+    }
+    
+    this.competencesField = service.competences;
+
+    console.log('Intitule : ', this.intituleField);
+    console.log('Description : ', this.descriptionField);
+    console.log('Prix : ', this.prixField);
+    console.log('Durée : ', this.dureeField);
+    console.log('Commision : ', this.commissionField);
+    console.log('Date Debut : ', this.dateDebutField);
+    console.log('Date Fin : ', this.dateFinField);
+    console.log('Competences : ', this.competencesField);
+    
+
+
 }
 
 private getDismissReason(reason: any): string {
@@ -180,6 +201,60 @@ private getDismissReason(reason: any): string {
   } else {
       return  `with: ${reason}`;
   }
+}
+
+updateService() {
+  console.log("updateeee")
+  console.log('Intitule : ', this.intituleField);
+    console.log('Description : ', this.descriptionField);
+    console.log('Prix : ', this.prixField);
+    console.log('Durée : ', this.dureeField);
+    console.log('Commision : ', this.commissionField);
+  
+
+  if (typeof this.dateDebutField === 'object' && this.dateDebutField instanceof Object) {
+    this.dateDebutField = `${this.dateDebutField.year}-${this.pad(this.dateDebutField.month)}-${this.pad(this.dateDebutField.day)}`;
+  }
+
+  if (typeof this.dateFinField === 'object' && this.dateFinField instanceof Object) {
+    this.dateFinField = `${this.dateFinField.year}-${this.pad(this.dateFinField.month)}-${this.pad(this.dateFinField.day)}`;
+  }
+
+  if(new Date(this.dateDebutField) > new Date(this.dateFinField)) {
+    this.afficherAlerteDate = true;
+  }
+
+  else {
+    console.log('dateDebutField:', this.dateDebutField);
+    console.log('dateFinField:', this.dateFinField);
+    console.log('Competences:', this.competencesField);
+    
+      var dataObject = {
+        nomService: this.intituleField,
+        description: this.descriptionField,
+        prix: this.prixField,
+        duree: this.dureeField,
+        commission: this.commissionField,
+        dateDebut: this.dateDebutField,
+        dateFin: this.dateFinField,
+        competences: this.competencesField
+      };
+
+    var jsonData = JSON.stringify(dataObject);
+    console.log('jsonData:' + jsonData);
+
+    this.http.put(config.apiUrl + 'services/'+ this.idService, jsonData, { headers: { 'Content-Type': 'application/json' } })
+      .toPromise().then((res) => {
+        alert('Service modifie');
+
+    });
+
+    this.getServices();
+  }
+}
+
+pad(value: number): string {
+  return value < 10 ? `0${value}` : `${value}`;
 }
 
   deleteService(serviceId: string) {

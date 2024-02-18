@@ -122,7 +122,7 @@ export class EmployesComponent implements OnInit {
     console.log('prenomField:', this.prenomField);
     console.log('genreField:', this.genreField);
     console.log('emailField:', this.emailField);
-    console.log('dateNaissanceField:', employe.dateNaissance.split("T")[0]);
+    console.log('dateNaissanceField:', employe.dateNaissance);
 
 
 }
