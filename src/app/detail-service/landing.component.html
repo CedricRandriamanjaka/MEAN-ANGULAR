@@ -69,9 +69,85 @@
                               </div>
                               <div class='row'>
                                   <div class='col-md-12 text-center mt-4'>
-                                      <a href="javascript:void(0)" class="btn btn-warning">Prendre rendez-vous</a>
+                                      <a href="javascript:void(0)" class="btn btn-warning" (click)="open(classic, '', '')">Prendre rendez-vous</a>
                                   </div>
                               </div>
+
+                              <!-- Modal -->
+
+                            <style>
+                              body{height: 100vh;justify-content: center;align-items: center;display: flex;background-color: #eee}.launch{height: 50px}.close{font-size: 21px;cursor: pointer}.nav-tabs{border:none !important}.nav-tabs .nav-link.active{color: #495057;background-color: #fff;border-color: #ffffff #ffffff #fff;border-top: 3px solid blue !important}.nav-tabs .nav-link{margin-bottom: -1px;border: 1px solid transparent;border-top-left-radius: 0rem;border-top-right-radius: 0rem;border-top: 3px solid #eee;font-size: 20px}.nav-tabs .nav-link:hover{border-color: #e9ecef #ffffff #ffffff}.nav-tabs{display: table !important;width: 100%}.nav-item{display: table-cell}.form-control{border-bottom: 1px solid #eee !important;border:none;font-weight: 600}.form-control:focus{color: #495057;background-color: #fff;border-color: #8bbafe;outline: 0;box-shadow: none}.inputbox{position: relative;margin-bottom: 20px;width: 100%}.inputbox span{position: absolute;top:7px;left: 11px;transition: 0.5s}.inputbox i{position: absolute;top: 13px;right: 8px;transition: 0.5s;color: #3F51B5}input::-webkit-outer-spin-button, input::-webkit-inner-spin-button{-webkit-appearance: none;margin: 0}.inputbox input:focus~span{transform: translateX(-0px) translateY(-15px);font-size: 12px}.inputbox input:valid~span{transform: translateX(-0px) translateY(-15px);font-size: 12px}.pay button{height: 47px;border-radius: 37px}
+                            </style>
+                              <ng-template #classic let-c="close" let-d="dismiss">
+                                <div class="modal-content">
+                                  <div class="modal-header">
+                                    <h6 class="modal-title" id="modal-title-default">finalisation de payement</h6>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="d('Cross click')">
+                                      <span aria-hidden="true">×</span>
+                                    </button>
+                                  </div>
+                                  <div class="modal-body">
+
+                                    <div class="row">
+                                      <div class="col-md-3"  *ngFor="let employe of employes; let i = index">
+                                          <img src="./assets/img/theme/team-1-800x800.jpg" class="rounded-circle img-center img-fluid shadow shadow-lg--hover" style="width: 200px;">
+                                          <div class="pt-4 text-center">
+                                              <input type="checkbox" class="form-control"><span class="d-block mb-1">{{ employe.nom }} {{ employe.prenom }}</span>
+                                          </div>
+                                      </div>
+                                    </div>
+
+
+                                    <div class="tabs mt-3">
+                                      <ul class="nav nav-tabs" id="myTab" role="tablist"> 
+                                        <li class="nav-item" role="presentation"> 
+                                          <a class="nav-link active" id="visa-tab" data-toggle="tab" href="#visa" role="tab" aria-controls="visa" aria-selected="true"> 
+                                            <img src="https://i.imgur.com/sB4jftM.png" width="80">
+                                          </a> 
+                                        </li> 
+                                      </ul> 
+                                      <div class="tab-content" id="myTabContent"> 
+                                        <div class="tab-pane fade show active" id="visa" role="tabpanel" aria-labelledby="visa-tab"> 
+                                          <div class="mt-4 mx-4"> 
+                                            <div class="text-center"> 
+                                              <h5>Credit card</h5>
+                                            </div> 
+                                            <div class="form mt-3"> 
+                                              <div class="inputbox"> 
+                                                <input type="text" name="name" class="form-control" required="required"> 
+                                                <span>Proprietaire de la carte</span> 
+                                              </div> 
+                                              <div class="inputbox"> 
+                                                <input type="number" name="name" min="1" max="999" class="form-control" required="required"> 
+                                                <span>Numero de la cart</span> 
+                                                <i class="fa fa-eye"></i> 
+                                              </div> 
+                                              <div class="d-flex flex-row"> 
+                                                <div class="inputbox"> 
+                                                 <input type="text" name="name" min="1" max="999" class="form-control" required="required"> 
+                                                  <span>Date expiration</span> 
+                                                </div> 
+                                                <div class="inputbox"> 
+                                                  <input type="password" name="name" min="1" max="999" class="form-control" required="required"> 
+                                                  <span>CVV</span> 
+                                                </div> 
+                                              </div> 
+                                              <div class="px-5 pay"> 
+                                                <button class="btn btn-warning btn-block">paye {{ service.prix }} Ar</button> 
+                                              </div> 
+                                            </div> 
+                                          </div> 
+                                        </div>  
+                                      </div> 
+                                    </div> 
+                                  
+                                  </div>
+                  
+                                  <div class="modal-footer">
+                                    <button type="button" class="btn btn-link ml-auto" data-dismiss="modal" (click)="c('Close click')">annuler</button>
+                                  </div>
+                                </div>
+                              </ng-template>
                           </div>
                       </div>
                   </div>
@@ -184,11 +260,11 @@
         <div class="p-5">
           <div class="row align-items-center">
             <div class="col-lg-8">
-              <h3 class="text-white">We made website building easier for you.</h3>
-              <p class="lead text-white mt-3">I will be the leader of a company that ends up being worth billions of dollars, because I got the answers. I understand culture.</p>
+              <h3 class="text-white">En cas de problème, contactez-nous.</h3>
+              <p class="lead text-white mt-3">Dans le cas où vous auriez des questions concernant nos employés, des remarques ou des problèmes de paiement, n'hésitez pas à nous contacter. Notre service client est disponible 24h/24 et 6 jours sur 7 pour vous accompagner et répondre à toutes vos préoccupations.</p>
             </div>
             <div class="col-lg-3 ml-lg-auto">
-              <a href="https://www.creative-tim.com/product/argon-design-system-angular?ref=adsa-landing-page" class="btn btn-lg btn-block btn-white">Download Angular</a>
+              <a href="#" class="btn btn-lg btn-block btn-white">envoyer mail</a>
             </div>
           </div>
         </div>

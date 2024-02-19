@@ -48,7 +48,7 @@ export class LoginComponent implements OnInit {
           if (!response.messageErreur) {
             
             if (response.role === 1) {
-              this.router.navigate(['/home']);
+              this.router.navigate(['/home-client']);
             }
             else if (response.role === 2) {
               this.router.navigate(['/profile']);
