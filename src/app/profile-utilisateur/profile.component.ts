@@ -8,7 +8,7 @@ import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
     templateUrl: './profile.component.html',
     styleUrls: ['./profile.component.scss']
 })
-export class ProfileComponent implements OnInit {
+export class ProfileUtilisateur implements OnInit {
     closeResult: string;
     utilisateur: any;
     competences: any = [];

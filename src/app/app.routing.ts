@@ -4,18 +4,22 @@ import { BrowserModule } from '@angular/platform-browser';
 import { Routes, RouterModule } from '@angular/router';
 
 import { HomeComponent } from './home/home.component';
-import { ProfileComponent } from './profile/profile.component';
+import { HomeClient } from './home-utilisateur/home.component';
+import { ProfileUtilisateur } from './profile-utilisateur/profile.component';
 import { SignupComponent } from './signup/signup.component';
 import { LandingComponent } from './landing/landing.component';
+import { detail } from './detail-service/landing.component';
 import { LoginComponent } from './login/login.component';
 
 const routes: Routes = [
   { path: 'home', component: HomeComponent },
-  { path: 'user-profile', component: ProfileComponent },
+  { path: 'home-client', component: HomeClient },
+  { path: 'user-profile', component: ProfileUtilisateur },
   { path: 'register', component: SignupComponent },
   { path: 'landing', component: LandingComponent },
+  { path: 'detail/:id', component: detail },
   { path: 'login', component: LoginComponent },
-  { path: '', redirectTo: 'home', pathMatch: 'full' }
+  { path: '', redirectTo: 'home-client', pathMatch: 'full' }
 ];
 
 @NgModule({
