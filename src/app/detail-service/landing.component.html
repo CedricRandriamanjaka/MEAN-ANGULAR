@@ -75,10 +75,23 @@
                                     <div class="col-md-3"  *ngFor="let employe of employes; let i = index">
                                         <img src="./assets/img/theme/team-1-800x800.jpg" class="rounded-circle img-center img-fluid shadow shadow-lg--hover" style="width: 200px;">
                                         <div class="pt-4 text-center">
-                                            <input type="checkbox" class="form-control"><span class="d-block mb-1">{{ employe.nom }} {{ employe.prenom }}</span>
+                                            <input type="checkbox" class="form-control" (click)="getIndispoDate(employe._id)"><span class="d-block mb-1">{{ employe.nom }} {{ employe.prenom }}</span>
                                         </div>
                                     </div>
                                   </div>
+                                </div>
+                                <div id='external-events'>
+                                  <p>
+                                    <strong>Service Duration</strong>
+                                  </p>
+                                
+                                  <div class='fc-event service-duration'>
+                                    <div class='fc-event-main'>Service Duration</div>
+                                  </div>
+                                </div>
+                                
+                                <div id='calendar-container'>
+                                  <div id='calendar'></div>
                                 </div>
                               </div>
                               <div class='row'>
