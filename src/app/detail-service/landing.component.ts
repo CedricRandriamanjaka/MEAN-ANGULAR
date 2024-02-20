@@ -16,6 +16,7 @@ export class detail implements OnInit {
   service: any;
   employes: any;
   competences: any = [];
+  viewDate : Date = new Date();
 
   constructor(private modalService: NgbModal,private route: ActivatedRoute,private http: HttpClient) { }
   readonly ApiUrl = "http://localhost:3000/api/";
@@ -34,8 +35,9 @@ export class detail implements OnInit {
       );
   }
 
-  getEmployes(): void {
-    this.http.get(this.ApiUrl + 'utilisateur/byRole/'+'2')
+  getEmployes(serviceId:String): void {
+    console.log(this.ApiUrl + 'services/getEmployesByCompetence/'+serviceId  );
+    this.http.get(this.ApiUrl + 'services/getEmployesByCompetence/'+serviceId)
         .subscribe(
             (data) => {
                 console.log('Data:', data);
@@ -63,8 +65,8 @@ getCompetences() {
   ngOnInit(): void {
     this.route.params.subscribe(params => {
       this.getService(params['id']);
+      this.getEmployes(params['id']);
     });
-    this.getEmployes();
     this.getCompetences();
 
   }

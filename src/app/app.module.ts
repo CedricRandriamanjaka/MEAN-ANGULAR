@@ -19,6 +19,8 @@ import { HomeModule } from './home/home.module';
 import { HomeModuleClient } from './home-utilisateur/home.module';
 import { LoginComponent } from './login/login.component';
 
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -38,7 +40,9 @@ import { LoginComponent } from './login/login.component';
     RouterModule,
     AppRoutingModule,
     HomeModule,
-    HomeModuleClient
+    HomeModuleClient,
+
+    BrowserAnimationsModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
