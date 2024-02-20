@@ -12,6 +12,7 @@ import { HomeManagerComponent } from './manager/home-manager/home-manager.compon
 import { ServicesComponent } from './manager/services/services.component';
 import { EmployesComponent } from './manager/employes/employes.component';
 import { HoraireEmployeComponent } from './manager/horaire-employe/horaire-employe.component';
+import { DepensesComponent } from './manager/depenses/depenses.component';
 
 const routes: Routes = [
   { path: 'home', component: HomeComponent },
@@ -22,6 +23,7 @@ const routes: Routes = [
   { path: 'manager', component: HomeManagerComponent },
   { path: 'services', component: ServicesComponent },
   { path: 'employes', component: EmployesComponent },
+  { path: 'depenses', component: DepensesComponent },
   { path: 'horaire/:employeId', component: HoraireEmployeComponent },
   // { path: 'manager', loadChildren: () => import('./manager/home-manager/home-manager.module').then((m) => m.HomeManagerModule) },
   { path: '', redirectTo: 'home', pathMatch: 'full' }
