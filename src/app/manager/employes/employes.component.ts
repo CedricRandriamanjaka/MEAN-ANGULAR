@@ -5,6 +5,7 @@ import { DatePipe } from '@angular/common';
 import { NgbDate } from '@ng-bootstrap/ng-bootstrap';
 import { IAlert } from 'src/app/sections/alerts-section/alerts-section.component';
 import { config } from 'src/app/config/config';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-employes',
@@ -45,7 +46,7 @@ export class EmployesComponent implements OnInit {
 
   public alerts: Array<IAlert> = [];
 
-  constructor(private http: HttpClient, private modalService: NgbModal) {
+  constructor(private http: HttpClient, private modalService: NgbModal, private router: Router) {
    }
 
   addEmploye() {
@@ -199,6 +200,11 @@ private getDismissReason(reason: any): string {
 
   pad(value: number): string {
     return value < 10 ? `0${value}` : `${value}`;
+  }
+
+  redirectHoraireEmploye(employe) {
+    console.log("redirectHoraireEmploye"+employe._id);
+    this.router.navigate(['/horaire', employe._id]);
   }
 
   ngOnInit() {
