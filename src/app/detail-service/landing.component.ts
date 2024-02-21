@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
@@ -6,28 +6,31 @@ import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { Calendar } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid'; // Importer explicitement le plugin timeGrid
-import interactionPlugin from '@fullcalendar/interaction'; // Importer interactionPlugin depuis le package @fullcalendar/interaction
+import interactionPlugin from '@fullcalendar/interaction'; // Importer interactionPlugin et Draggable depuis le package @fullcalendar/interaction
+import { Draggable } from '@fullcalendar/interaction';
+
 
 @Component({
-    selector: 'app-landing',
-    templateUrl: './landing.component.html',
-    styleUrls: ['./landing.component.scss']
+  selector: 'app-landing',
+  templateUrl: './landing.component.html',
+  styleUrls: ['./landing.component.scss']
 })
 
 export class detail implements OnInit {
   focus: any;
-    closeResult: string;
-    focus1: any;
+  closeResult: string;
+  focus1: any;
   service: any;
   employes: any;
   competences: any = [];
-  viewDate : Date = new Date();
+  viewDate: Date = new Date();
 
-  intevalDate : any;
-  calendar : any;
-  
+  intevalDate: any;
+  calendar: any;
+  @ViewChild('external') external: ElementRef;
+  showCalendar: boolean = false;
 
-  constructor(private modalService: NgbModal,private route: ActivatedRoute,private http: HttpClient) { }
+  constructor(private modalService: NgbModal, private route: ActivatedRoute, private http: HttpClient) { }
   readonly ApiUrl = "http://localhost:3000/api/";
 
   private initialiserFullCalendar() {
@@ -39,12 +42,12 @@ export class detail implements OnInit {
     var startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), currentHour, currentMinute);
     // Définir la date de fin comme étant 14 jours plus tard à la même heure et minutes que maintenant
     var endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 14, currentHour, currentMinute);
-  
+
     var calendarEl = document.getElementById('calendar');
     this.calendar = new Calendar(calendarEl, {
-      plugins: [timeGridPlugin,interactionPlugin],
+      plugins: [timeGridPlugin, interactionPlugin],
       initialView: 'timeGridWeek',
-      slotDuration: '01:00:00',
+      slotDuration: '00:30:00',
       slotLabelInterval: { hours: 1 },
       headerToolbar: {
         left: 'prev,next today',
@@ -59,10 +62,21 @@ export class detail implements OnInit {
         end: endDate
       },
       editable: true,
-    droppable: true,
-    drop: function(info) {}
+      droppable: true,
+      eventOverlap: false,
     });
     this.calendar.render();
+
+    new Draggable(this.external.nativeElement, {
+      itemSelector: '.fc-event',
+      eventData: function (eventEl) {
+        return {
+          title: eventEl.innerText
+        };
+      }
+    });
+
+
   }
 
   getIndispoDate(employeID) {
@@ -84,7 +98,7 @@ export class detail implements OnInit {
               classNames: ['indisponible'],
               backgroundColor: 'grey',
               textColor: 'white',
-              groupId:'indisponible'
+              groupId: 'indisponible'
             });
           });
         },
@@ -92,16 +106,17 @@ export class detail implements OnInit {
           console.error('Error:', error);
         }
       );
+    this.showCalendar = true;
   }
 
 
-  getService(serviceId:String) {
-    this.http.get(this.ApiUrl + 'services/'+serviceId)
+  getService(serviceId: String) {
+    this.http.get(this.ApiUrl + 'services/' + serviceId)
       .subscribe(
         (data) => {
           console.log('Data service:', data);
           this.service = data;
-          
+
         },
         (error) => {
           console.error('Error:', error);
@@ -109,32 +124,32 @@ export class detail implements OnInit {
       );
   }
 
-  getEmployes(serviceId:String): void {
-    console.log(this.ApiUrl + 'services/getEmployesByCompetence/'+serviceId  );
-    this.http.get(this.ApiUrl + 'services/getEmployesByCompetence/'+serviceId)
-        .subscribe(
-            (data) => {
-                console.log('Data:', data);
-                this.employes = data;
-            },  
-            (error) => {
-                console.error('Error:', error);
-            }
-        );
-}
-getCompetences() {
-  this.http.get(this.ApiUrl + 'competences')
-    .subscribe(
-      (data) => {
-        console.log('Data competence:', data);
-        this.competences = data;
-        
-      },
-      (error) => {
-        console.error('Error:', error);
-      }
-    );
-}
+  getEmployes(serviceId: String): void {
+    console.log(this.ApiUrl + 'services/getEmployesByCompetence/' + serviceId);
+    this.http.get(this.ApiUrl + 'services/getEmployesByCompetence/' + serviceId)
+      .subscribe(
+        (data) => {
+          console.log('Data:', data);
+          this.employes = data;
+        },
+        (error) => {
+          console.error('Error:', error);
+        }
+      );
+  }
+  getCompetences() {
+    this.http.get(this.ApiUrl + 'competences')
+      .subscribe(
+        (data) => {
+          console.log('Data competence:', data);
+          this.competences = data;
+
+        },
+        (error) => {
+          console.error('Error:', error);
+        }
+      );
+  }
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
@@ -142,41 +157,41 @@ getCompetences() {
       this.getEmployes(params['id']);
     });
     this.getCompetences();
-    
+
   }
-  
+
   findCompetenceById(competenceId: string): any {
     return this.competences.find((competence: any) => competence._id === competenceId);
   }
   open(content, type, modalDimension) {
     if (modalDimension === 'sm' && type === 'modal_mini') {
-        this.modalService.open(content, { windowClass: 'modal-mini', size: 'sm', centered: true }).result.then((result) => {
-            this.closeResult = `Closed with: ${result}`;
-        }, (reason) => {
-            this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
-        });
+      this.modalService.open(content, { windowClass: 'modal-mini', size: 'sm', centered: true }).result.then((result) => {
+        this.closeResult = `Closed with: ${result}`;
+      }, (reason) => {
+        this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
+      });
     } else if (modalDimension === '' && type === 'Notification') {
-        this.modalService.open(content, { windowClass: 'modal-danger', centered: true }).result.then((result) => {
-            this.closeResult = `Closed with: ${result}`;
-        }, (reason) => {
-            this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
-        });
+      this.modalService.open(content, { windowClass: 'modal-danger', centered: true }).result.then((result) => {
+        this.closeResult = `Closed with: ${result}`;
+      }, (reason) => {
+        this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
+      });
     } else {
-        this.modalService.open(content, { centered: true }).result.then((result) => {
-            this.closeResult = `Closed with: ${result}`;
-        }, (reason) => {
-            this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
-        });
+      this.modalService.open(content, { centered: true }).result.then((result) => {
+        this.closeResult = `Closed with: ${result}`;
+      }, (reason) => {
+        this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
+      });
     }
   }
 
   private getDismissReason(reason: any): string {
-      if (reason === ModalDismissReasons.ESC) {
-          return 'by pressing ESC';
-      } else if (reason === ModalDismissReasons.BACKDROP_CLICK) {
-          return 'by clicking on a backdrop';
-      } else {
-          return `with: ${reason}`;
-      }
+    if (reason === ModalDismissReasons.ESC) {
+      return 'by pressing ESC';
+    } else if (reason === ModalDismissReasons.BACKDROP_CLICK) {
+      return 'by clicking on a backdrop';
+    } else {
+      return `with: ${reason}`;
+    }
   }
 }
