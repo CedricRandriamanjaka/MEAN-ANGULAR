@@ -24,10 +24,11 @@
               
               <div class="input-group input-group-alternative mb-4">
                 <div class="input-group-prepend">
-                  <span class="input-group-text"><i class="ni ni-single-02"></i></span>
+                  <span class="input-group-text"><i class="ni ni-credit-card"></i></span>
+                  <span class="input-group-text">Type de dépense</span>
                 </div>
-                <select class="form-control" placeholder="Type de dépense" [(ngModel)]="depenseType" *ngFor="let item of typeDepenses">
-                  <option value="item._id">{{item.nomDepense}}</option>
+                <select class="form-control" [(ngModel)]="depenseType" *ngFor="let item of typeDepenses">
+                  <option [value]="item._id">{{item.nomDepense}}</option>
                 </select>
               </div>
               <div class="form-group mb-4" [ngClass]="{'focused':focus===true}">
@@ -38,8 +39,13 @@
                     <input class="form-control" placeholder="Montant" type="text" [(ngModel)]="montant" (focus)="focus2=true" (blur)="focus2=false">
                     </div>
                 </div>
-                <div class="col-lg-4 col-sm-4 form-group" [ngClass]="{'focused':focus3===true}">
+                <div class="mb-4 form-group" [ngClass]="{'focused':focus3===true}">
+                  <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text"><i class="ni ni-calendar-grid-58"></i></span>
+                  </div>
                     <input class="form-control datepicker" placeholder="Date" id="date" name="dp1" [(ngModel)]="date" ngbDatepicker #d1="ngbDatepicker" (click)="d1.toggle()" (focus)="focus3=true" (blur)="focus3=false" type="text" autocomplete="off"/>
+                  </div>
                   </div>
               <div>
                 <button type="button" (click)="addDepenses()" class="btn btn-default btn-round btn-block btn-lg">Enregistrer</button>
@@ -47,6 +53,75 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  </section>
+
+
+  <div class="position-relative">
+    <!-- shape Hero -->
+    <section class="section section-lg section-shaped pb-250">
+      <!-- SVG separator -->
+      <div class="separator separator-bottom separator-skew">
+        <svg x="0" y="0" viewBox="0 0 2560 100" preserveAspectRatio="none" version="1.1" xmlns="http://www.w3.org/2000/svg">
+          <polygon class="fill-white" points="2560 0 2560 100 0 100"></polygon>
+        </svg>
+      </div>
+    </section>
+    <!-- 1st Hero Variation -->
+  </div>
+  <section class="section section-lg pt-lg-0 mt--200">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-4 col-sm-4 form-group">
+          <div class="input-group input-group-alternative mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text">Mois</span>
+            </div>
+            
+            <select class="form-control" placeholder="Mois" [(ngModel)]="mois">
+              <option value="" disabled selected>Mois</option>
+              <option *ngFor="let month of months" [value]="month.value">{{ month.label }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-lg-4 col-sm-4 form-group">
+          <div class="input-group input-group-alternative mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text">Jour</span>
+            </div>
+            
+            <select class="form-control" placeholder="Jour" [(ngModel)]="jour">
+              <option value="" disabled selected>Jour</option>
+              <option *ngFor="let day of days" [value]="day.value">{{ day.label }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-lg-4 col-sm-4 form-group">
+          <button class="btn btn-1 btn-primary btn-block" (click)="filtreDepense(mois, jour)" type="button">Filtrer</button>
+        </div>
+        <div class="col-lg-12" *ngIf="depenses && depenses.length > 0; else noDepenses">
+          <div class="row row-grid">
+            <div class="col-lg-4" *ngFor="let item of depenses; let i = index;">
+              <div class="card card-lift--hover shadow border-0 mb-4">
+                <div class="card-body py-5">
+                  <div class="icon icon-shape icon-shape-primary rounded-circle mb-4">
+                    <i class="ni ni-check-bold"></i>
+                  </div>
+                  <h6 class="text-primary text-uppercase" *ngIf="item.depenseTypeID && item.depenseTypeID.nomDepense">{{item.depenseTypeID.nomDepense}}</h6>
+                  <p class="description mt-3">Description: {{item.description}}</p>
+                  <p class="description mt-3">Montant: {{item.montant}} Ariary</p>
+                  <p class="description mt-3">Date: {{item.date}}</p>
+
+                  <a href="javascript:void(0)" class="btn btn-primary mt-4">Supprimer</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <ng-template #noDepenses>
+          <p>Aucune dépense à afficher.</p>
+        </ng-template>
       </div>
     </div>
   </section>
