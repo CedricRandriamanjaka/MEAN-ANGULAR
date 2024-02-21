@@ -25,7 +25,6 @@ const routes: Routes = [
   { path: 'employes', component: EmployesComponent },
   { path: 'depenses', component: DepensesComponent },
   { path: 'horaire/:employeId', component: HoraireEmployeComponent },
-  // { path: 'manager', loadChildren: () => import('./manager/home-manager/home-manager.module').then((m) => m.HomeManagerModule) },
   { path: '', redirectTo: 'home', pathMatch: 'full' }
 ];
 
