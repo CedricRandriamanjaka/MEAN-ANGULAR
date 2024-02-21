@@ -25,9 +25,45 @@ export class detail implements OnInit {
 
   intevalDate : any;
   calendar : any;
+  
 
   constructor(private modalService: NgbModal,private route: ActivatedRoute,private http: HttpClient) { }
   readonly ApiUrl = "http://localhost:3000/api/";
+
+  private initialiserFullCalendar() {
+    var now = new Date();
+    // Récupérer l'heure et les minutes actuelles
+    var currentHour = now.getHours();
+    var currentMinute = now.getMinutes();
+    // Définir la date de début avec l'heure et les minutes actuelles
+    var startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), currentHour, currentMinute);
+    // Définir la date de fin comme étant 14 jours plus tard à la même heure et minutes que maintenant
+    var endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 14, currentHour, currentMinute);
+  
+    var calendarEl = document.getElementById('calendar');
+    this.calendar = new Calendar(calendarEl, {
+      plugins: [timeGridPlugin,interactionPlugin],
+      initialView: 'timeGridWeek',
+      slotDuration: '01:00:00',
+      slotLabelInterval: { hours: 1 },
+      headerToolbar: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'timeGridWeek'
+      },
+      locale: 'fr',
+      nowIndicator: true,
+      height: 'auto',
+      validRange: {
+        start: startDate,
+        end: endDate
+      },
+      editable: true,
+    droppable: true,
+    drop: function(info) {}
+    });
+    this.calendar.render();
+  }
 
   getIndispoDate(employeID) {
     this.http.get<any[]>(this.ApiUrl + 'utilisateur/getIndispoDate/' + employeID + '/' + this.service._id)
@@ -58,61 +94,6 @@ export class detail implements OnInit {
       );
   }
 
-  // Dans votre composant Angular
-
-  private initialiserFullCalendar() {
-    var now = new Date(); // Date et heure actuelles
-  
-    // Récupérer l'heure et les minutes actuelles
-    var currentHour = now.getHours();
-    var currentMinute = now.getMinutes();
-  
-    // Définir la date de début avec l'heure et les minutes actuelles
-    var startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), currentHour, currentMinute);
-  
-    // Définir la date de fin comme étant 7 jours plus tard à la même heure et minutes que maintenant
-    var endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 14, currentHour, currentMinute);
-  
-    var calendarEl = document.getElementById('calendar');
-    this.calendar = new Calendar(calendarEl, {
-      plugins: [timeGridPlugin,interactionPlugin],
-      initialView: 'timeGridWeek',
-      slotDuration: '01:00:00',
-      slotLabelInterval: { hours: 1 },
-      headerToolbar: {
-        left: 'prev,next today',
-        center: 'title',
-        right: 'timeGridWeek,timeGridDay'
-      },
-      locale: 'fr',
-      nowIndicator: true,
-      height: 'auto',
-      validRange: {
-        start: startDate,
-        end: endDate
-      },
-      droppable: true,
-      drop: function(info) {
-              // Vérifier si l'événement est un service-duration et si l'heure de début est valide
-              if (info.draggedEl.classList.contains('service-duration') && info.date) {
-                // Récupérer l'heure de début de l'événement drop
-                var start = info.date;
-      
-                // Calculer l'heure de fin en ajoutant la durée du service (en minutes)
-                var end = new Date(start.getTime() + (this.service.durre * 60000)); // Convertir les minutes en millisecondes
-      
-                // Ajouter un nouvel événement au calendrier
-                this.calendar.addEvent({
-                  title: 'Service Duration',
-                  start: start,
-                  end: end,
-                  allDay: false // Cet événement n'est pas sur toute la journée
-                });
-              }
-            }
-    });
-    this.calendar.render();
-  }
 
   getService(serviceId:String) {
     this.http.get(this.ApiUrl + 'services/'+serviceId)
@@ -161,6 +142,7 @@ getCompetences() {
       this.getEmployes(params['id']);
     });
     this.getCompetences();
+    
   }
   
   findCompetenceById(competenceId: string): any {

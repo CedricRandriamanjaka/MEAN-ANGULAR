@@ -14,6 +14,7 @@ import { ProfileUtilisateur } from './profile-utilisateur/profile.component';
 import { HomeComponent } from './home/home.component';
 import { NavbarComponent } from './shared/navbar/navbar.component';
 import { FooterComponent } from './shared/footer/footer.component';
+import { FullCalendarModule } from '@fullcalendar/angular';
 
 import { HomeModule } from './home/home.module';
 import { HomeModuleClient } from './home-utilisateur/home.module';
@@ -41,7 +42,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     AppRoutingModule,
     HomeModule,
     HomeModuleClient,
-
+    FullCalendarModule,
     BrowserAnimationsModule,
   ],
   providers: [],
