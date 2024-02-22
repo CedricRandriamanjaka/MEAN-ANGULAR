@@ -9,7 +9,8 @@ import timeGridPlugin from '@fullcalendar/timegrid'; // Importer explicitement l
 import interactionPlugin from '@fullcalendar/interaction'; // Importer interactionPlugin et Draggable depuis le package @fullcalendar/interaction
 import { Draggable } from '@fullcalendar/interaction';
 import { duration } from 'moment';
-
+import { CookieService } from 'ngx-cookie-service';
+import * as moment from 'moment'; // Importez moment.js
 
 @Component({
   selector: 'app-landing',
@@ -31,7 +32,10 @@ export class detail implements OnInit {
   @ViewChild('external') external: ElementRef;
   showCalendar: boolean = false;
 
-  constructor(private modalService: NgbModal, private route: ActivatedRoute, private http: HttpClient) { }
+  nouvelIntervalDebut: any;
+  currentEmpID: any;
+
+  constructor(private modalService: NgbModal, private route: ActivatedRoute, private http: HttpClient, private cookieService: CookieService) { }
   readonly ApiUrl = "http://localhost:3000/api/";
 
   private initialiserFullCalendar() {
@@ -43,9 +47,20 @@ export class detail implements OnInit {
     var startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), currentHour, currentMinute);
     // Définir la date de fin comme étant 14 jours plus tard à la même heure et minutes que maintenant
     var endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 14, currentHour, currentMinute);
-    let serviceDuree = this.service.duree;
 
     var calendarEl = document.getElementById('calendar');
+    new Draggable(this.external.nativeElement, {
+      itemSelector: '.fc-event',
+      eventData: (eventEl) => {
+        return {
+          title: eventEl.innerText,
+          duration: { minutes: this.service.duree }, // Utilisation de la durée du service
+      timeZone: 'UTC',
+
+        };
+      }
+    });
+    
     this.calendar = new Calendar(calendarEl, {
       plugins: [timeGridPlugin, interactionPlugin],
       initialView: 'timeGridWeek',
@@ -56,31 +71,49 @@ export class detail implements OnInit {
         center: 'title',
         right: 'timeGridWeek'
       },
-      locale: 'fr',
       nowIndicator: true,
       height: 'auto',
       validRange: {
         start: startDate,
         end: endDate
       },
+      timeZone: 'UTC',
       editable: true,
       droppable: true,
       eventOverlap: false,
-    });
-    this.calendar.render();
-
-    new Draggable(this.external.nativeElement, {
-      itemSelector: '.fc-event',
-      eventData: function (eventEl) {
-        return {
-          title: eventEl.innerText,
-          duration: { minutes :serviceDuree },
-        };
+      // Gérer le drop d'un nouvel événement dans le calendrier
+      drop: (dropInfo) => {
+        // const event = dropInfo.draggedEl;
+        // const newEvent = {
+        //   title: event.innerText,
+        //   start: dropInfo.date,
+        //   allDay: false, // Adapter selon vos besoins
+        //   duration: { minutes: this.service.duree }, // Utilisation de la durée du service
+        // };
+        this.nouvelIntervalDebut = new Date(dropInfo.date.getTime() - 3 * 60 * 60 * 1000);
+        dropInfo.draggedEl.parentNode.removeChild(dropInfo.draggedEl);
+        // Ajouter l'événement au calendrier
+        // this.calendar.addEvent(newEvent);
+      },
+      eventDrop: (eventDropInfo) => {
+        // Récupérer les informations sur l'événement déplacé
+        const event = eventDropInfo.event;
+        const newStart = new Date(event.start.getTime() - 3 * 60 * 60 * 1000);
+        // const newEnd = event.end;  
+        // Utiliser les nouvelles valeurs start et end comme nécessaire
+        // Par exemple, les stocker dans une variable pour une utilisation ultérieure
+        this.nouvelIntervalDebut = newStart;
+        // Autres actions à effectuer après le déplacement de l'événement
       }
     });
-  }
+    
+    this.calendar.render();
+     
+  }   
 
   getIndispoDate(employeID) {
+    this.currentEmpID = employeID;
+    console.log(this.ApiUrl + 'utilisateur/getIndispoDate/' + employeID + '/' + this.service._id);
     this.http.get<any[]>(this.ApiUrl + 'utilisateur/getIndispoDate/' + employeID + '/' + this.service._id)
       .subscribe(
         (data) => {
@@ -193,6 +226,28 @@ export class detail implements OnInit {
       return 'by clicking on a backdrop';
     } else {
       return `with: ${reason}`;
+    }
+  }
+
+  public confirmeRDV() {
+    // Vérifiez d'abord si this.nouvelIntervalDebut est défini
+    if (this.nouvelIntervalDebut) {
+      // Envoyez une requête HTTP POST pour ajouter le rendez-vous à votre API
+      const dateToSend = moment(this.nouvelIntervalDebut).toISOString();
+      this.http.post<any>(`${this.ApiUrl}rendezVous/ajouterRDV/${this.cookieService.get('userId')}/${this.currentEmpID}/${this.service._id}/${dateToSend}`, {})
+        .subscribe(
+          (data) => {
+            console.log('Rendez-vous ajouté avec succès:', data);
+            // Traitez la réponse de l'API si nécessaire
+          },
+          (error) => {
+            console.error('Erreur lors de l\'ajout du rendez-vous :', error);
+            // Gérez les erreurs si nécessaire
+          }
+        );
+    } else {
+      console.warn('L\'heure de début du nouvel intervalle n\'est pas définie.');
+      // Gérez le cas où la date de début n'est pas définie
     }
   }
 }
