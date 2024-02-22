@@ -43,6 +43,7 @@ export class detail implements OnInit {
     var startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), currentHour, currentMinute);
     // Définir la date de fin comme étant 14 jours plus tard à la même heure et minutes que maintenant
     var endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 14, currentHour, currentMinute);
+    let serviceDuree = this.service.duree;
 
     var calendarEl = document.getElementById('calendar');
     this.calendar = new Calendar(calendarEl, {
@@ -72,10 +73,10 @@ export class detail implements OnInit {
       itemSelector: '.fc-event',
       eventData: function (eventEl) {
         return {
-          title: this.service.nom,
-          duration: { minute : this.service.duree},
+          title: eventEl.innerText,
+          duration: { minutes :serviceDuree },
         };
-      } 
+      }
     });
   }
 
