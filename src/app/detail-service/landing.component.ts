@@ -8,6 +8,7 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid'; // Importer explicitement le plugin timeGrid
 import interactionPlugin from '@fullcalendar/interaction'; // Importer interactionPlugin et Draggable depuis le package @fullcalendar/interaction
 import { Draggable } from '@fullcalendar/interaction';
+import { duration } from 'moment';
 
 
 @Component({
@@ -71,12 +72,11 @@ export class detail implements OnInit {
       itemSelector: '.fc-event',
       eventData: function (eventEl) {
         return {
-          title: eventEl.innerText
+          title: this.service.nom,
+          duration: { minute : this.service.duree},
         };
-      }
+      } 
     });
-
-
   }
 
   getIndispoDate(employeID) {
