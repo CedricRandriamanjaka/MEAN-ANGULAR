@@ -27,6 +27,13 @@ export class EmployesComponent implements OnInit {
   focus5: boolean = false;
   focus6: boolean = false;
 
+  focus1: boolean = false;
+  focus7: boolean = false;
+  focus8: boolean = false;
+  focus9: boolean = false;
+  focus10: boolean = false;
+
+
   closeResult: string;
 
   employees: any = [];
@@ -78,11 +85,11 @@ export class EmployesComponent implements OnInit {
       var jsonData = JSON.stringify(dataObject);
       console.log('jsonData:' + jsonData);
 
-      this.http.post(config.apiUrl + 'utilisateur/nouveauUtilisateur', jsonData, { headers: { 'Content-Type': 'application/json' } })
-        .toPromise().then((res) => {
-          alert('Employe ajouté');
+      // this.http.post(config.apiUrl + 'utilisateur/nouveauUtilisateur', jsonData, { headers: { 'Content-Type': 'application/json' } })
+      //   .toPromise().then((res) => {
+      //     alert('Employe ajouté');
 
-      });
+      // });
 
       this.getAllEmployees();
     }
