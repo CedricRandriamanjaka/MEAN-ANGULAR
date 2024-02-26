@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { NgbDate } from '@ng-bootstrap/ng-bootstrap';
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { IAlert } from '../../sections/alerts-section/alerts-section.component';
 import { config } from 'src/app/config/config';
+import { NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-services',
@@ -36,8 +37,22 @@ export class ServicesComponent implements OnInit {
   focus6;
   focus7;
   focus8;
+
+  focus9;
+  focus10;
+  focus11;
+  focus12;
+  focus13;
   // model : NgbDate;
   model1: NgbDate;
+
+  intitule: string = "";
+  description: string = "";
+  dateDebut: any = "";
+  dateFin: any = "";
+  prix: string = "";
+  duree: string = "";
+  commission: string = "";
 
   idService: string;
   intituleField: string;
@@ -49,24 +64,34 @@ export class ServicesComponent implements OnInit {
   commissionField: string;
   competencesField: any = [];
 
+  @ViewChild('serviceForm') form: NgForm;
+
+
   constructor(private http: HttpClient, private modalService: NgbModal) { }
 
   addService() {
-    var intitule = (<HTMLInputElement>document.getElementById("intitule")).value;
-    var description = (<HTMLInputElement>document.getElementById("description")).value;
-    var prix = (<HTMLInputElement>document.getElementById("prix")).value;
-    var duree = (<HTMLInputElement>document.getElementById("duree")).value;
-    var commission = (<HTMLInputElement>document.getElementById("commission")).value;
+    // var intitule = (<HTMLInputElement>document.getElementById("intitule")).value;
+    // var description = (<HTMLInputElement>document.getElementById("description")).value;
+    // var prix = (<HTMLInputElement>document.getElementById("prix")).value;
+    // var duree = (<HTMLInputElement>document.getElementById("duree")).value;
+    // var commission = (<HTMLInputElement>document.getElementById("commission")).value;
     var debut = (<HTMLInputElement>document.getElementById("debut")).value;
     var fin = (<HTMLInputElement>document.getElementById("fin")).value;
 
+    console.log('intitule: ' + this.intitule);
+    console.log('description:' + this.description);
+    console.log('prix:' + this.prix);
+    console.log('duree:' + this.duree);
+    console.log('commission:' + this.commission);
 
-    if (intitule == "" || description == "" || prix == "" || duree == "" || commission == "") {
+
+
+    if (this.intitule == "" || this.description == "" || this.prix == "" || this.duree == "" || this.commission == "") {
       this.afficherAlerteChamp = true;
     }
 
-    if (!Number.isInteger(parseInt(prix, 10)) || !Number.isInteger(parseInt(duree, 10)) || !Number.isInteger(parseInt(commission, 10))
-      || isNaN(parseFloat(prix)) || isNaN(parseFloat(duree)) || isNaN(parseFloat(commission))) {
+    if (!Number.isInteger(parseInt(this.prix, 10)) || !Number.isInteger(parseInt(this.duree, 10)) || !Number.isInteger(parseInt(this.commission, 10))
+      || isNaN(parseFloat(this.prix)) || isNaN(parseFloat(this.duree)) || isNaN(parseFloat(this.commission))) {
       this.afficherAlerteNumber = true;
     }
 
@@ -87,11 +112,11 @@ export class ServicesComponent implements OnInit {
       console.log('Compétences sélectionnées:', selectedCompetences);
 
       var dataObject = {
-        nomService: intitule,
-        description: description,
-        prix: prix,
-        duree: duree,
-        commission: commission,
+        nomService: this.intitule,
+        description: this.description,
+        prix: this.prix,
+        duree: this.duree,
+        commission: this.commission,
         dateDebut: debut,
         dateFin: fin,
         competences: selectedCompetences
@@ -100,11 +125,11 @@ export class ServicesComponent implements OnInit {
       var jsonData = JSON.stringify(dataObject);
       console.log('jsonData:' + jsonData);
 
-      this.http.post(config.apiUrl + 'services', jsonData, { headers: { 'Content-Type': 'application/json' } })
-        .toPromise().then((res) => {
-          alert('Service ajoutée');
+      // this.http.post(config.apiUrl + 'services', jsonData, { headers: { 'Content-Type': 'application/json' } })
+      //   .toPromise().then((res) => {
+      //     alert('Service ajoutée');
 
-        });
+      //   });
       this.getServices();
     }
 
@@ -188,8 +213,20 @@ export class ServicesComponent implements OnInit {
     console.log('Date Debut : ', this.dateDebutField);
     console.log('Date Fin : ', this.dateFinField);
     console.log('Competences : ', this.competencesField);
-    
 
+    if(this.form) {
+      this.form.setValue({
+        intitule: this.intituleField,  
+        description: this.descriptionField, 
+        prix: this.prixField,  
+        duree: this.dureeField, 
+        commission: this.commissionField, 
+        dateDebut: this.dateDebutField,  
+        dateFin: this.dateFinField
+      });
+    }
+    
+    console.log('this.form'+' : ', this.form);
 
 }
 
@@ -210,7 +247,7 @@ updateService() {
     console.log('Prix : ', this.prixField);
     console.log('Durée : ', this.dureeField);
     console.log('Commision : ', this.commissionField);
-  
+    console.log('this.form'+' : ', this.form);
 
   if (typeof this.dateDebutField === 'object' && this.dateDebutField instanceof Object) {
     this.dateDebutField = `${this.dateDebutField.year}-${this.pad(this.dateDebutField.month)}-${this.pad(this.dateDebutField.day)}`;
@@ -243,11 +280,11 @@ updateService() {
     var jsonData = JSON.stringify(dataObject);
     console.log('jsonData:' + jsonData);
 
-    this.http.put(config.apiUrl + 'services/'+ this.idService, jsonData, { headers: { 'Content-Type': 'application/json' } })
-      .toPromise().then((res) => {
-        alert('Service modifie');
+    // this.http.put(config.apiUrl + 'services/'+ this.idService, jsonData, { headers: { 'Content-Type': 'application/json' } })
+    //   .toPromise().then((res) => {
+    //     alert('Service modifie');
 
-    });
+    // });
 
     this.getServices();
   }
@@ -258,16 +295,19 @@ pad(value: number): string {
 }
 
   deleteService(serviceId: string) {
-    this.http.delete(config.apiUrl + 'services/'+ serviceId)
-    .toPromise().then((res) => {
-      this.getServices();
-      alert('Le service a bien été supprime');
-    });
+    console.log('this.form'+' : ', this.form);
+
+    // this.http.delete(config.apiUrl + 'services/'+ serviceId)
+    // .toPromise().then((res) => {
+    //   this.getServices();
+    //   alert('Le service a bien été supprime');
+    // });
   }
 
   ngOnInit() {
     this.getServices();
     this.getCompetences();
   }
+
 
 }
