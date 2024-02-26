@@ -1,16 +1,13 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
-
 import { Calendar } from '@fullcalendar/core';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import timeGridPlugin from '@fullcalendar/timegrid'; // Importer explicitement le plugin timeGrid
-import interactionPlugin from '@fullcalendar/interaction'; // Importer interactionPlugin et Draggable depuis le package @fullcalendar/interaction
+import timeGridPlugin from '@fullcalendar/timegrid';
+import interactionPlugin from '@fullcalendar/interaction';
 import { Draggable } from '@fullcalendar/interaction';
-import { duration } from 'moment';
 import { CookieService } from 'ngx-cookie-service';
-import * as moment from 'moment'; // Importez moment.js
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-landing',
@@ -35,32 +32,28 @@ export class detail implements OnInit {
   nouvelIntervalDebut: any;
   currentEmpID: any;
 
-  constructor(private modalService: NgbModal, private route: ActivatedRoute, private http: HttpClient, private cookieService: CookieService) { }
+  constructor(private modalService: NgbModal, private route: ActivatedRoute, private router: Router, private http: HttpClient, private cookieService: CookieService) { }
   readonly ApiUrl = "http://localhost:3000/api/";
 
   private initialiserFullCalendar() {
     var now = new Date();
-    // Récupérer l'heure et les minutes actuelles
     var currentHour = now.getHours();
     var currentMinute = now.getMinutes();
-    // Définir la date de début avec l'heure et les minutes actuelles
     var startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), currentHour, currentMinute);
-    // Définir la date de fin comme étant 14 jours plus tard à la même heure et minutes que maintenant
     var endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 14, currentHour, currentMinute);
-
     var calendarEl = document.getElementById('calendar');
+
     new Draggable(this.external.nativeElement, {
       itemSelector: '.fc-event',
       eventData: (eventEl) => {
         return {
           title: eventEl.innerText,
-          duration: { minutes: this.service.duree }, // Utilisation de la durée du service
-      timeZone: 'UTC',
-
+          duration: { minutes: this.service.duree },
+          timeZone: 'UTC',
         };
       }
     });
-    
+
     this.calendar = new Calendar(calendarEl, {
       plugins: [timeGridPlugin, interactionPlugin],
       initialView: 'timeGridWeek',
@@ -81,35 +74,18 @@ export class detail implements OnInit {
       editable: true,
       droppable: true,
       eventOverlap: false,
-      // Gérer le drop d'un nouvel événement dans le calendrier
       drop: (dropInfo) => {
-        // const event = dropInfo.draggedEl;
-        // const newEvent = {
-        //   title: event.innerText,
-        //   start: dropInfo.date,
-        //   allDay: false, // Adapter selon vos besoins
-        //   duration: { minutes: this.service.duree }, // Utilisation de la durée du service
-        // };
         this.nouvelIntervalDebut = new Date(dropInfo.date.getTime() - 3 * 60 * 60 * 1000);
         dropInfo.draggedEl.parentNode.removeChild(dropInfo.draggedEl);
-        // Ajouter l'événement au calendrier
-        // this.calendar.addEvent(newEvent);
       },
       eventDrop: (eventDropInfo) => {
-        // Récupérer les informations sur l'événement déplacé
         const event = eventDropInfo.event;
         const newStart = new Date(event.start.getTime() - 3 * 60 * 60 * 1000);
-        // const newEnd = event.end;  
-        // Utiliser les nouvelles valeurs start et end comme nécessaire
-        // Par exemple, les stocker dans une variable pour une utilisation ultérieure
         this.nouvelIntervalDebut = newStart;
-        // Autres actions à effectuer après le déplacement de l'événement
       }
     });
-    
     this.calendar.render();
-     
-  }   
+  }
 
   getIndispoDate(employeID) {
     this.currentEmpID = employeID;
@@ -119,11 +95,7 @@ export class detail implements OnInit {
         (data) => {
           console.log('Data intevalDate:', data);
           this.intevalDate = data;
-
-          // Initialiser le calendrier
           this.initialiserFullCalendar();
-
-          // Ajouter chaque intervalle comme un événement dans le calendrier
           this.intevalDate.forEach(interval => {
             this.calendar.addEvent({
               title: 'Indisponible',
@@ -143,14 +115,12 @@ export class detail implements OnInit {
     this.showCalendar = true;
   }
 
-
   getService(serviceId: String) {
     this.http.get(this.ApiUrl + 'services/' + serviceId)
       .subscribe(
         (data) => {
           console.log('Data service:', data);
           this.service = data;
-
         },
         (error) => {
           console.error('Error:', error);
@@ -177,7 +147,6 @@ export class detail implements OnInit {
         (data) => {
           console.log('Data competence:', data);
           this.competences = data;
-
         },
         (error) => {
           console.error('Error:', error);
@@ -191,7 +160,6 @@ export class detail implements OnInit {
       this.getEmployes(params['id']);
     });
     this.getCompetences();
-
   }
 
   findCompetenceById(competenceId: string): any {
@@ -230,24 +198,20 @@ export class detail implements OnInit {
   }
 
   public confirmeRDV() {
-    // Vérifiez d'abord si this.nouvelIntervalDebut est défini
     if (this.nouvelIntervalDebut) {
-      // Envoyez une requête HTTP POST pour ajouter le rendez-vous à votre API
       const dateToSend = moment(this.nouvelIntervalDebut).toISOString();
       this.http.post<any>(`${this.ApiUrl}rendezVous/ajouterRDV/${this.cookieService.get('userId')}/${this.currentEmpID}/${this.service._id}/${dateToSend}`, {})
         .subscribe(
           (data) => {
             console.log('Rendez-vous ajouté avec succès:', data);
-            // Traitez la réponse de l'API si nécessaire
+            alert(data);
           },
           (error) => {
             console.error('Erreur lors de l\'ajout du rendez-vous :', error);
-            // Gérez les erreurs si nécessaire
           }
         );
     } else {
       console.warn('L\'heure de début du nouvel intervalle n\'est pas définie.');
-      // Gérez le cas où la date de début n'est pas définie
     }
   }
 }
