@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { CookieService } from 'ngx-cookie-service';
 
 @Component({
     selector: 'app-home',
@@ -9,16 +10,18 @@ import { HttpClient } from '@angular/common/http';
 
 export class HomeClient implements OnInit {
   services: any = [];
+  serviceSpecial: any = [];
   competences: any = [];
-    constructor(private http: HttpClient) { }
+  serviceCompetence: any = [];
+  
+    constructor(private http: HttpClient, private cookieService: CookieService) { }
 
     readonly ApiUrl = "http://localhost:3000/api/";
 
       getServices() {
-        this.http.get(this.ApiUrl + 'services')
+        this.http.get(this.ApiUrl + 'services/nonSpecial')
           .subscribe(
             (data) => {
-              console.log('Data Service:', data);
               this.services = data;
             },
             (error) => {
@@ -27,13 +30,35 @@ export class HomeClient implements OnInit {
           );
       }
 
-      
+      getServiceSpecial() {
+        this.http.get(this.ApiUrl + 'services/serviceSpecial')
+          .subscribe(
+            (data) => {
+              this.serviceSpecial = data;
+            },
+            (error) => {
+              console.error('Error:', error);
+            }
+          );
+      }
+
+      getServiceCompetence() {
+        const userId = this.cookieService.get('userId');
+        this.http.get(this.ApiUrl + 'services/serviceCompetence/' + userId)
+          .subscribe(
+            (data) => {
+              this.serviceCompetence = data;
+            },
+            (error) => {
+              console.error('Error:', error);
+            }
+          );
+      }
 
       getCompetences() {
         this.http.get(this.ApiUrl + 'competences')
           .subscribe(
             (data) => {
-              console.log('Data competence:', data);
               this.competences = data;
               
             },
@@ -46,6 +71,8 @@ export class HomeClient implements OnInit {
     ngOnInit() { 
       this.getServices();
       this.getCompetences();
+      this.getServiceSpecial();
+      this.getServiceCompetence();
     }
 
     findCompetenceById(competenceId: string): any {
