@@ -34,7 +34,7 @@ export class detail implements OnInit {
   currentEmpID: any;
 
   constructor(private modalService: NgbModal, private route: ActivatedRoute, private router: Router, private http: HttpClient, private cookieService: CookieService) { }
-  readonly ApiUrl = "http://localhost:3000/api/";
+  readonly ApiUrl = "https://mean-m1-1-nz0z.onrender.com/api/";
 
   private initialiserFullCalendar() {
     var now = new Date();

@@ -28,7 +28,7 @@ export class NavbarComponent implements OnInit {
   public isLoggedIn = false;
 
   public histo;
-  readonly ApiUrl = "http://localhost:3000/api/";
+  readonly ApiUrl = "https://mean-m1-1-nz0z.onrender.com/api/";
 
   constructor(public location: Location, private router: Router, private http: HttpClient,private cookieService: CookieService,private authService: AuthService) {
   }
