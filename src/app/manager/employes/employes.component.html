@@ -1,6 +1,33 @@
 <app-navbar-manager></app-navbar-manager>
 <!-- <br><br><br> -->
 
+<div class="alert-container">
+  <div *ngFor="let alert of alerts">
+    <ngb-alert [type]="alert.type" [dismissible]="true" (close)="close(alert)">
+      <ng-container *ngIf="alert.icon">
+        <div class="alert-inner--icon">
+          <i class="{{alert.icon}}"></i>
+        </div>
+      </ng-container>
+      <span class="alert-inner--text"> <strong>{{alert.strong}} </strong>{{ alert.message }}</span>
+    </ngb-alert>
+  </div>
+</div>
+
+<style>
+  /* signup.component.scss */
+  .alert-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    width: 300px;
+  }
+
+  .alert {
+    margin-bottom: 10px;
+  }
+</style>
 
 <section class="section section-lg bg-gradient-default">
   <div class="container pt-lg pb-300">
@@ -25,7 +52,16 @@
         <div class="card bg-gradient-secondary shadow">
           <div class="card-body p-lg-5">
             <h4 class="mb-1">Ajouter un employé</h4>
-
+            <div class="form-group mb-mt-4">
+              <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="dropped($event)"
+                (onFileOver)="fileOver($event)" (onFileLeave)="fileLeave($event)">
+                <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+                  <div class="mr-2">Déposer votre image ici</div>
+                  <button type="button" class="btn btn-sm btn-outline-primary" (click)="openFileSelector()">Importer
+                    image</button>
+                </ng-template>
+              </ngx-file-drop>
+            </div>
             <div class="form-group mb-4" [ngClass]="{'focused':focus===true}">
               <div class="input-group input-group-alternative">
                 <input class="form-control" placeholder="Nom" type="text" [(ngModel)]="nom" (focus)="focus=true"
@@ -84,28 +120,6 @@
 
 
 
-<ng-template #popoverContent style="background-color: rgba(255, 0, 0, 0.5);">
-  <div class="nav nav-pills justify-content-start">
-    <ul ngbNav #nav2="ngbNav" type="pills" class="nav-pills">
-      <li [ngbNavItem]="1">
-        <a ngbNavLink placement="bottom" ngbTooltip="Modifier" (click)="open(classic1, 'modal_mini', 'sm', employe)">
-          <span class="nav-link-icon d-block"><i class="ni ni-atom"></i></span>
-        </a>
-      </li>
-      <li [ngbNavItem]="2">
-        <a ngbNavLink placement="bottom" ngbTooltip="Supprimer">
-          <span class="nav-link-icon d-block"><i class="ni ni-chat-round"></i></span>
-        </a>
-      </li>
-      <li [ngbNavItem]="3">
-        <a ngbNavLink placement="bottom" ngbTooltip="Modifier l'horaire de travail">
-          <span class="nav-link-icon d-block"><i class="ni ni-cloud-download-95"></i></span>
-        </a>
-      </li>
-    </ul>
-  </div>
-</ng-template>
-
 
 
 <section class="section section-lg">
@@ -116,12 +130,14 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-md-6 col-lg-4 mb-5 mb-lg-0" *ngFor="let employe of employees; let i = index;">
+      <div class="col-md-6 col-lg-4 mb-4" *ngFor="let employe of employees; let i = index;">
         <div class="px-4">
-          <img src="./assets/img/theme/team-1-800x800.jpg"
-            class="rounded-circle img-center img-fluid shadow shadow-lg--hover" style="width: 200px;" placement="bottom"
-            [ngbPopover]="popoverContent"
-            [popoverOptions]="{ 'style': { 'background-color': 'rgba(255, 0, 0, 0.5)' } }">
+          <img *ngIf="employe.image !=='' && employe.image !== null; else noImage" [src]="urlImage + employe.image"
+            class="img-center img-fluid shadow shadow-lg--hover" style="width: 200px" alt="Description de l'image" />
+          <ng-template #noImage>
+            <img src="./assets/img/theme/team-1-800x800.jpg" class="img-center img-fluid shadow shadow-lg--hover"
+              style="width: 200px" />
+          </ng-template>
           <div class="pt-4 text-center">
             <h5 class="title">
               <span class="d-block mb-1">{{employe.nom}} {{employe.prenom}}</span>
@@ -129,14 +145,104 @@
               <p><small class="h6 text-muted">{{employe.dateNaissance}}</small></p>
             </h5>
             <div class="mt-3">
-              <button (click)="open(classic1, 'modal_mini', 'sm', employe)"
-                class="btn btn-sm btn-primary">Modifier</button>
-              <button (click)="deleteEmployee(employe._id)" class="btn btn-sm btn-warning">Supprimer</button>
+              <button ngbButton type="button" placement="bottom" class="btn btn-primary btn-tooltip"
+                ngbTooltip="Modifier" (click)="toggleModifier(employe)">
+                <span class="nav-link-icon d-block"><i class="ni ni-atom"></i></span>
+              </button>
+
+              <button ngbButton type="button" placement="bottom" class="btn btn-warning btn-tooltip"
+                ngbTooltip="Supprimer" (click)="deleteEmployee(employe._id)">
+                <span class="nav-link-icon d-block"><i class="ni ni-chat-round"></i></span>
+              </button>
+
+              <button ngbButton type="button" placement="bottom" class="btn btn-primary btn-tooltip"
+                ngbTooltip="Modifier l'horaire de travail" (click)="redirectHoraireEmploye(employe)">
+                <span class="nav-link-icon d-block"><i class="ni ni-cloud-download-95"></i></span>
+              </button>
+
             </div>
-            <div class="mt-3">
-              <button class="btn btn-sm btn-warning" (click)="redirectHoraireEmploye(employe)">Modifier l'horaire de
-                travail</button>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<section class="section section-shaped section-lg" *ngIf="estEnModeModification">
+  <div class="shape shape-style-1">
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+  <div class="container pt-lg-md" #maSection>
+    <div class="row justify-content-center">
+      <div class="col-lg-5">
+        <div class="card bg-secondary shadow border-0">
+          <div class="card-body px-lg-5 py-lg-5">
+            <div class="text-center text-muted mb-4">
+              <small>Modifier Un Employe</small>
             </div>
+            <form role="form" #employeForm="ngForm" (ngSubmit)="updateEmployee()">
+              <div class="form-group mb-3">
+                <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="droppedUpdate($event, image)"
+                  (onFileOver)="fileOver($event)" (onFileLeave)="fileLeave($event)">
+                  <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+                    <div class="mr-1">Déposer votre image ici</div>
+                    <button type="button" class="btn btn-sm btn-outline-primary" (click)="openFileSelector()">Importer
+                      image</button>
+                  </ng-template>
+                </ngx-file-drop>
+              </div>
+              <div class="form-group mb-3" [ngClass]="{'focused':focus2===true}">
+                <div class="input-group input-group-alternative">
+                  <input class="form-control" name="nom" [(ngModel)]="nomField" type="text" (focus)="focus2=true"
+                    (blur)="focus2=false">
+                </div>
+              </div>
+              <div class="form-group mb-3" [ngClass]="{'focused':focus3===true}">
+                <div class="input-group input-group-alternative">
+                  <input class="form-control" name="prenom" [(ngModel)]="prenomField" type="text" (focus)="focus3=true"
+                    (blur)="focus3=false">
+                </div>
+              </div>
+              <div class="form-group mb-3" [ngClass]="{'focused':focus4===true}">
+                <div class="input-group input-group-alternative">
+                  <input class="form-control" type="email" name="email" [(ngModel)]="emailField" (focus)="focus4=true"
+                    (blur)="focus4=false">
+                </div>
+              </div>
+
+              <div class="input-group input-group-alternative mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="ni ni-single-02"></i></span>
+                </div>
+                <select class="form-control" [(ngModel)]="genreField">
+                  <option value="1">Masculin</option>
+                  <option value="2">Féminin</option>
+                  <option value="3">Autre</option>
+                </select>
+              </div>
+
+              <div class="form-group mb-3" [ngClass]="{'focused':focus6===true}">
+                <div class="input-group input-group-alternative">
+                  <input class="form-control datepicker" [placeholder]="dateNaissanceField" id="date" name="dp1"
+                    [(ngModel)]="dateNaissanceField" ngbDatepicker #d1="ngbDatepicker" (click)="d1.toggle()"
+                    (focus)="focus6=true" (blur)="focus6=false" type="text" autocomplete="off" />
+                </div>
+              </div>
+
+              <div class="text-center">
+                <input type="submit" class="btn btn-primary my-4" value="Modifier" />
+              </div>
+            </form>
           </div>
         </div>
       </div>

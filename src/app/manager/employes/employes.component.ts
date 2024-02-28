@@ -1,11 +1,13 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { DatePipe } from '@angular/common';
 import { NgbDate } from '@ng-bootstrap/ng-bootstrap';
 import { IAlert } from 'src/app/sections/alerts-section/alerts-section.component';
 import { config } from 'src/app/config/config';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { NgxFileDropEntry, FileSystemFileEntry, FileSystemDirectoryEntry } from 'ngx-file-drop';
+import { NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-employes',
@@ -19,6 +21,7 @@ export class EmployesComponent implements OnInit {
   email: string = "";
   date: string = "";
   genre: string = "";
+  image: any = "";
   focus: boolean = false;
 
   focus2: boolean = false;
@@ -50,11 +53,54 @@ export class EmployesComponent implements OnInit {
   emailField: string;
   dateNaissanceField: any;
   genreField: string;
+  imageField: any;
+
+  @ViewChild('employeForm') form: NgForm;
+  @ViewChild('maSection', {static: false}) maSection!: ElementRef;
+  estEnModeModification: boolean = false;
+
+  urlImage: string = config.baseUrl + "/Images/Employe/";
+
+  public files: NgxFileDropEntry[] = [];
 
   public alerts: Array<IAlert> = [];
+  private backup: Array<IAlert>;
 
-  constructor(private http: HttpClient, private modalService: NgbModal, private router: Router) {
+  constructor(private http: HttpClient, private modalService: NgbModal, private router: Router, private route: ActivatedRoute) {
    }
+
+   toggleModifier(employe) {
+    this.estEnModeModification = true;
+
+    setTimeout(() => {
+      if (this.maSection) {
+        this.maSection.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+
+    this.idEmploye = employe._id;
+    this.nomField = employe.nom;
+    this.prenomField = employe.prenom;
+    this.genreField = employe.genre;
+    this.emailField = employe.email;
+    this.dateNaissanceField = employe.dateNaissance.split("T")[0];
+    this.imageField = employe.image;
+
+    console.log('nomField:', this.nomField);
+    console.log('prenomField:', this.prenomField);
+    console.log('genreField:', this.genreField);
+    console.log('emailField:', this.emailField);
+    console.log('dateNaissanceField:', employe.dateNaissance);
+    // if(employe.image ?? false) {
+    //   console.log('No Image');
+    // }
+    // else {
+    //   console.log('image:', employe.image);
+    // }
+    
+
+    
+  }
 
   addEmploye() {
     var date = (<HTMLInputElement>document.getElementById("date")).value;
@@ -63,27 +109,41 @@ export class EmployesComponent implements OnInit {
 
     if (this.nom == "" || this.prenom == "" || this.email == "" || this.date == "" || this.genre == "") {
       this.afficherAlerteChamp = true;
+      this.alerts.unshift({
+        id: 0,
+        type: 'danger',
+        strong: 'Error!',
+        message: 'Veuillez remplir tous les champs',
+        icon: 'fa fa-info'
+      });
     }
 
     if(new Date(date) > new Date()) {
       this.afficherAlerteDate = true;
+      this.alerts.unshift({
+        id: 0,
+        type: 'danger',
+        strong: 'Error!',
+        message: 'La date de naissance est postérieure à la date d\'aujourd\'hui.',
+        icon: 'fa fa-info'
+      });
     }
 
     else {
 
-      var dataObject = {
-        nom: this.nom,
-        prenom: this.prenom,
-        email: this.email,
-        dateNaissance: date,
-        genre: this.genre,
-        motdepasse: "mdp",
-        etat: "actif",
-        role: 2
-      };
+      // var dataObject = {
+      //   nom: this.nom,
+      //   prenom: this.prenom,
+      //   email: this.email,
+      //   dateNaissance: date,
+      //   genre: this.genre,
+      //   motdepasse: "mdp",
+      //   etat: "actif",
+      //   role: 2
+      // };
 
-      var jsonData = JSON.stringify(dataObject);
-      console.log('jsonData:' + jsonData);
+      // var jsonData = JSON.stringify(dataObject);
+      // console.log('jsonData:' + jsonData);
 
       // this.http.post(config.apiUrl + 'utilisateur/nouveauUtilisateur', jsonData, { headers: { 'Content-Type': 'application/json' } })
       //   .toPromise().then((res) => {
@@ -91,8 +151,65 @@ export class EmployesComponent implements OnInit {
 
       // });
 
-      this.getAllEmployees();
+      var formData = new FormData();
+
+      // Ajoutez les autres champs au FormData
+      formData.append('nom', this.nom);
+      formData.append('prenom', this.prenom);
+      formData.append('email', this.email);
+      formData.append('dateNaissance', date);
+      formData.append('genre', this.genre);
+      formData.append('motdepasse', "mdp");
+      formData.append('etat', "actif");
+      formData.append('role', "2");
+
+      if (this.image) {
+        formData.append('image', this.image);
+      }
+
+      console.log('formData: '+ formData);
+
+      this.http.post(config.apiUrl + 'utilisateur/nouveauUtilisateur', formData)
+      .subscribe((response: any) => {
+        if (response.type === 'success') {
+          this.alerts.unshift({
+            id: 0,
+            type: response.type,
+            strong: response.type + '! ',
+            message: response.messageErreur,
+            icon: 'ni ni-like-2'
+          });
+          this.getAllEmployees();
+          this.router.navigate(['/services'], {
+            queryParams: {
+              successAjout: "Employé ajouté avec succès"
+            }
+          });
+        } else {
+          this.alerts.unshift({
+            id: 0,
+            type: response.type,
+            strong: response.type + '! ',
+            message: response.messageErreur,
+            icon: 'ni ni-support-16'
+          });
+        }
+
+      }, error => {
+        console.error('Error uploading data', error);
+        this.alerts.unshift({
+          id: 0,
+          type: 'danger',
+          strong: 'Error!',
+          message: 'Un problème est survenu lors de l\'ajout d\'un employé. Réessayer plus tard.',
+          icon: 'ni ni-support-16'
+      });
+      });
+
+      
     }
+
+    this.backup = this.alerts.map((alert: IAlert) => Object.assign({}, alert));
 
   }
 
@@ -181,27 +298,53 @@ private getDismissReason(reason: any): string {
 
     else {
       console.log('dateNaissanceField:', this.dateNaissanceField);
-      var dataObject = {
-        nom: this.nomField,
-        prenom: this.prenomField,
-        email: this.emailField,
-        dateNaissance: this.dateNaissanceField,
-        genre: this.genreField,
-        motdepasse: "mdp",
-        etat: "actif",
-        role: 2
-      };
+      // var dataObject = {
+      //   nom: this.nomField,
+      //   prenom: this.prenomField,
+      //   email: this.emailField,
+      //   dateNaissance: this.dateNaissanceField,
+      //   genre: this.genreField,
+      //   motdepasse: "mdp",
+      //   etat: "actif",
+      //   role: 2
+      // };
 
-      var jsonData = JSON.stringify(dataObject);
-      console.log('jsonData:' + jsonData);
+      // var jsonData = JSON.stringify(dataObject);
+      // console.log('jsonData:' + jsonData);
 
-      this.http.put(config.apiUrl + 'utilisateur/modifierUtilisateur/'+ this.idEmploye, jsonData, { headers: { 'Content-Type': 'application/json' } })
-        .toPromise().then((res) => {
-          alert('Employe modifie');
+      // this.http.put(config.apiUrl + 'utilisateur/modifierUtilisateur/'+ this.idEmploye, jsonData, { headers: { 'Content-Type': 'application/json' } })
+      //   .toPromise().then((res) => {
+      //     alert('Employe modifie');
 
+      // });
+
+      var formData = new FormData();
+
+      // Ajoutez les autres champs au FormData
+      formData.append('nom', this.nomField);
+      formData.append('prenom', this.prenomField);
+      formData.append('email', this.emailField);
+      formData.append('dateNaissance', this.dateNaissanceField);
+      formData.append('genre', this.genreField);
+      formData.append('motdepasse', "mdp");
+      formData.append('etat', "actif");
+      formData.append('role', "2");
+
+      if (this.imageField) {
+        formData.append('image', this.imageField);
+      }
+
+      console.log('formData: '+ formData);
+
+      this.http.put(config.apiUrl + 'utilisateur/modifierUtilisateur/'  + this.idEmploye , formData)
+      .subscribe((response: any) => {
+        console.log('Data uploaded successfully', response);
+        alert('Employé modifié');
+        this.getAllEmployees();
+      }, error => {
+        console.error('Error uploading data', error);
       });
 
-      this.getAllEmployees();
     }
   }
 
@@ -214,8 +357,99 @@ private getDismissReason(reason: any): string {
     this.router.navigate(['/horaire', employe._id]);
   }
 
+  public dropped(files: NgxFileDropEntry[]) {
+    this.files = files;
+    for (const droppedFile of files) {
+
+      // Is it a file?
+      if (droppedFile.fileEntry.isFile) {
+        const fileEntry = droppedFile.fileEntry as FileSystemFileEntry;
+        fileEntry.file((file: File) => {
+
+          // Here you can access the real file
+          console.log(droppedFile.relativePath, file);
+          this.image = file;
+
+          
+          // You could upload it like this:
+          // const formData = new FormData()
+          // formData.append('logo', file, droppedFile.relativePath)
+
+          // // Headers
+          // const headers = new HttpHeaders({
+          //   'security-token': 'mytoken'
+          // })
+
+          // this.http.post('https://mybackend.com/api/upload/sanitize-and-save-logo', formData, { headers: headers, responseType: 'blob' })
+          // .subscribe(data => {
+          //   // Sanitized logo returned from backend
+          // })
+          
+
+        });
+      } else {
+        // It was a directory (empty directories are added, otherwise only files)
+        const fileEntry = droppedFile.fileEntry as FileSystemDirectoryEntry;
+        console.log(droppedFile.relativePath, fileEntry);
+      }
+    }
+  }
+
+  public droppedUpdate(files: NgxFileDropEntry[]) {
+    this.files = files;
+    for (const droppedFile of files) {
+
+      // Is it a file?
+      if (droppedFile.fileEntry.isFile) {
+        const fileEntry = droppedFile.fileEntry as FileSystemFileEntry;
+        fileEntry.file((file: File) => {
+
+          // Here you can access the real file
+          console.log(droppedFile.relativePath, file);
+          this.imageField = file;
+          
+
+        });
+      } else {
+        // It was a directory (empty directories are added, otherwise only files)
+        const fileEntry = droppedFile.fileEntry as FileSystemDirectoryEntry;
+        console.log(droppedFile.relativePath, fileEntry);
+      }
+    }
+  }
+
+  public fileOver(event: any){
+    console.log(event);
+  }
+
+  public fileLeave(event: any){
+    console.log(event);
+  }
+
+  deleteEmployee(employeId: string) {
+
+    this.http.delete(config.apiUrl + 'utilisateur/supprimerUtilisateur/'+ employeId)
+    .toPromise().then((res) => {
+      
+      this.getAllEmployees();
+      alert('L\'employé a bien été supprimé');
+    });
+  }
+
   ngOnInit() {
     this.getAllEmployees();
+    this.route.queryParams.subscribe(params => {
+      const successAjout = params['successAjout'];
+      if (successAjout) {
+        this.alerts.unshift({
+          id: 0,
+          type: 'success',
+          strong: 'Success! ',
+          message: successAjout,
+          icon: 'ni ni-like-2'
+        });
+      }
+    });
   }
 
 }
