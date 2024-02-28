@@ -343,6 +343,7 @@ private getDismissReason(reason: any): string {
         console.log('Data uploaded successfully', response);
         alert('Employé modifié');
         this.getAllEmployees();
+        this.estEnModeModification = false;
       }, error => {
         console.error('Error uploading data', error);
       });

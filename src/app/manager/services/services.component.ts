@@ -74,7 +74,7 @@ export class ServicesComponent implements OnInit {
   imageField: any;
   competencesField: any = [];
 
-  urlImage: string = config.baseUrl + "/Images/";
+  urlImage: string = config.baseUrl + "/Images/Service/";
 
   @ViewChild('serviceForm') form: NgForm;
   @ViewChild('maSection', { static: false }) maSection!: ElementRef;
@@ -520,9 +520,12 @@ export class ServicesComponent implements OnInit {
           console.log('Data uploaded successfully', response);
           alert('Service modifiée');
           this.getServices();
+          this.estEnModeModification = false;
         }, error => {
           console.error('Error uploading data', error);
         });
+
+        
 
     }
   }
