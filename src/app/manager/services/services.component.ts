@@ -310,7 +310,7 @@ export class ServicesComponent implements OnInit {
               icon: 'ni ni-like-2'
             });
             // this.getServices();
-            this.router.navigate(['/employes'], {
+            this.router.navigate(['/services'], {
               queryParams: {
                 successAjout: "Service ajoutée avec succès"
               }
@@ -333,7 +333,7 @@ export class ServicesComponent implements OnInit {
             message: 'Un problème est survenu lors de l\'ajout d\'un service. Réessayer plus tard.',
             icon: 'ni ni-support-16'
         });
-          console.error('Error uploading data', error);
+          console.error('Error adding data', error);
         });
 
     }

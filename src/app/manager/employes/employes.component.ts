@@ -182,7 +182,7 @@ export class EmployesComponent implements OnInit {
             icon: 'ni ni-like-2'
           });
           this.getAllEmployees();
-          this.router.navigate(['/services'], {
+          this.router.navigate(['/employes'], {
             queryParams: {
               successAjout: "Employé ajouté avec succès"
             }
