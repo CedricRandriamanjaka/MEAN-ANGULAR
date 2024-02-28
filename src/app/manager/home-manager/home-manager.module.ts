@@ -14,6 +14,7 @@ import { EmployesComponent } from '../employes/employes.component';
 import { HoraireEmployeComponent } from '../horaire-employe/horaire-employe.component';
 import { DepensesComponent } from '../depenses/depenses.component';
 import { NgxFileDropModule } from 'ngx-file-drop';
+import { Ng2SearchPipeModule } from 'ng2-search-filter';
 
 @NgModule({
     imports: [
@@ -23,7 +24,8 @@ import { NgxFileDropModule } from 'ngx-file-drop';
         RouterModule,
         SectionsModule, 
         NgbModule,
-        NgxFileDropModule
+        NgxFileDropModule,
+        Ng2SearchPipeModule
     ],
     declarations: [ 
         HomeManagerComponent, 
