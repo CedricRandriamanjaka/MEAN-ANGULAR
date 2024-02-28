@@ -13,6 +13,7 @@ import { ServicesComponent } from '../services/services.component';
 import { EmployesComponent } from '../employes/employes.component';
 import { HoraireEmployeComponent } from '../horaire-employe/horaire-employe.component';
 import { DepensesComponent } from '../depenses/depenses.component';
+import { NgxFileDropModule } from 'ngx-file-drop';
 
 @NgModule({
     imports: [
@@ -20,7 +21,9 @@ import { DepensesComponent } from '../depenses/depenses.component';
         BrowserModule,
         FormsModule,
         RouterModule,
-        SectionsModule, NgbModule
+        SectionsModule, 
+        NgbModule,
+        NgxFileDropModule
     ],
     declarations: [ 
         HomeManagerComponent, 
