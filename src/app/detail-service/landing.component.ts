@@ -21,6 +21,7 @@ export class detail implements OnInit {
   focus1: any;
   service: any;
   employes: any;
+  fav: any;
   competences: any = [];
   viewDate: Date = new Date();
 
@@ -89,11 +90,9 @@ export class detail implements OnInit {
 
   getIndispoDate(employeID) {
     this.currentEmpID = employeID;
-    console.log(this.ApiUrl + 'utilisateur/getIndispoDate/' + employeID + '/' + this.service._id);
     this.http.get<any[]>(this.ApiUrl + 'utilisateur/getIndispoDate/' + employeID + '/' + this.service._id)
       .subscribe(
         (data) => {
-          console.log('Data intevalDate:', data);
           this.intevalDate = data;
           this.initialiserFullCalendar();
           this.intevalDate.forEach(interval => {
@@ -119,7 +118,6 @@ export class detail implements OnInit {
     this.http.get(this.ApiUrl + 'services/' + serviceId)
       .subscribe(
         (data) => {
-          console.log('Data service:', data);
           this.service = data;
         },
         (error) => {
@@ -129,11 +127,9 @@ export class detail implements OnInit {
   }
 
   getEmployes(serviceId: String): void {
-    console.log(this.ApiUrl + 'services/getEmployesByCompetence/' + serviceId);
     this.http.get(this.ApiUrl + 'services/getEmployesByCompetence/' + serviceId)
       .subscribe(
         (data) => {
-          console.log('Data:', data);
           this.employes = data;
         },
         (error) => {
@@ -141,11 +137,26 @@ export class detail implements OnInit {
         }
       );
   }
+
+  getFav(): void {
+    const userId = this.cookieService.get('userId');
+    
+    this.http.get(this.ApiUrl + 'favori/utilisateur/' + userId)
+      .subscribe(
+        (data: any[]) => {
+          this.fav = data.filter(favorite => this.employes.some(employee => employee.id === favorite.id));
+        },
+        (error) => {
+          console.error('Error:', error);
+        }
+      );
+  }
+  
+
   getCompetences() {
     this.http.get(this.ApiUrl + 'competences')
       .subscribe(
         (data) => {
-          console.log('Data competence:', data);
           this.competences = data;
         },
         (error) => {
@@ -160,6 +171,7 @@ export class detail implements OnInit {
       this.getEmployes(params['id']);
     });
     this.getCompetences();
+    this.getFav();
   }
 
   findCompetenceById(competenceId: string): any {
@@ -203,7 +215,6 @@ export class detail implements OnInit {
       this.http.post<any>(`${this.ApiUrl}rendezVous/ajouterRDV/${this.cookieService.get('userId')}/${this.currentEmpID}/${this.service._id}/${dateToSend}`, {})
         .subscribe(
           (data) => {
-            console.log('Rendez-vous ajouté avec succès:', data);
             alert(data);
           },
           (error) => {
