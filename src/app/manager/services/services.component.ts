@@ -1,10 +1,12 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { NgbDate } from '@ng-bootstrap/ng-bootstrap';
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { IAlert } from '../../sections/alerts-section/alerts-section.component';
 import { config } from 'src/app/config/config';
 import { NgForm } from '@angular/forms';
+import { NgxFileDropEntry, FileSystemFileEntry, FileSystemDirectoryEntry } from 'ngx-file-drop';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-services',
@@ -13,7 +15,12 @@ import { NgForm } from '@angular/forms';
 })
 export class ServicesComponent implements OnInit {
 
+  estEnModeModification: boolean = false;
+
   public alerts: Array<IAlert> = [];
+  private backup: Array<IAlert>;
+
+  public files: NgxFileDropEntry[] = [];
 
   closeResult: string;
   services: any = [];
@@ -53,6 +60,7 @@ export class ServicesComponent implements OnInit {
   prix: string = "";
   duree: string = "";
   commission: string = "";
+  image: any = "";
 
   idService: string;
   intituleField: string;
@@ -62,12 +70,126 @@ export class ServicesComponent implements OnInit {
   prixField: string;
   dureeField: string;
   commissionField: string;
+  imageField: any;
   competencesField: any = [];
 
+  urlImage: string = config.baseUrl + "/Images/";
+
   @ViewChild('serviceForm') form: NgForm;
+  @ViewChild('maSection', { static: false }) maSection!: ElementRef;
 
 
-  constructor(private http: HttpClient, private modalService: NgbModal) { }
+  constructor(private http: HttpClient, private modalService: NgbModal, private router: Router, private route: ActivatedRoute) { }
+
+  toggleModifier(service) {
+    this.estEnModeModification = true;
+
+    setTimeout(() => {
+      if (this.maSection) {
+        this.maSection.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+
+    this.idService = service._id;
+    this.intituleField = service.nom;
+    this.descriptionField = service.description;
+    this.prixField = service.prix;
+    this.dureeField = service.duree;
+    this.commissionField = service.commission;
+    if (service.dateDebut !== null && service.dateFin !== null) {
+      this.dateDebutField = service.dateDebut.split("T")[0];
+      this.dateFinField = service.dateFin.split("T")[0];
+    }
+
+    this.competencesField = this.competences.map(itemA => {
+      const itemB = service.competences.find(itemB => itemB._id === itemA._id);
+      // console.log(itemB)
+
+      if (itemB) {
+        return { ...itemA, isChecked: true };
+      } else {
+        return { ...itemA, isChecked: false };
+      }
+    });
+
+    console.log('Intitule : ', this.intituleField);
+    console.log('Description : ', this.descriptionField);
+    console.log('Prix : ', this.prixField);
+    console.log('Durée : ', this.dureeField);
+    console.log('Commision : ', this.commissionField);
+    console.log('Date Debut : ', this.dateDebutField);
+    console.log('Date Fin : ', this.dateFinField);
+    console.log('Competences : ', this.competencesField);
+  }
+
+  public dropped(files: NgxFileDropEntry[]) {
+    this.files = files;
+    for (const droppedFile of files) {
+
+      // Is it a file?
+      if (droppedFile.fileEntry.isFile) {
+        const fileEntry = droppedFile.fileEntry as FileSystemFileEntry;
+        fileEntry.file((file: File) => {
+
+          // Here you can access the real file
+          console.log(droppedFile.relativePath, file);
+          this.image = file;
+
+
+          // You could upload it like this:
+          // const formData = new FormData()
+          // formData.append('logo', file, droppedFile.relativePath)
+
+          // // Headers
+          // const headers = new HttpHeaders({
+          //   'security-token': 'mytoken'
+          // })
+
+          // this.http.post('https://mybackend.com/api/upload/sanitize-and-save-logo', formData, { headers: headers, responseType: 'blob' })
+          // .subscribe(data => {
+          //   // Sanitized logo returned from backend
+          // })
+
+
+        });
+      } else {
+        // It was a directory (empty directories are added, otherwise only files)
+        const fileEntry = droppedFile.fileEntry as FileSystemDirectoryEntry;
+        console.log(droppedFile.relativePath, fileEntry);
+      }
+    }
+  }
+
+  public droppedUpdate(files: NgxFileDropEntry[]) {
+    this.files = files;
+    for (const droppedFile of files) {
+
+      // Is it a file?
+      if (droppedFile.fileEntry.isFile) {
+        const fileEntry = droppedFile.fileEntry as FileSystemFileEntry;
+        fileEntry.file((file: File) => {
+
+          // Here you can access the real file
+          console.log(droppedFile.relativePath, file);
+          this.imageField = file;
+
+
+        });
+      } else {
+        // It was a directory (empty directories are added, otherwise only files)
+        const fileEntry = droppedFile.fileEntry as FileSystemDirectoryEntry;
+        console.log(droppedFile.relativePath, fileEntry);
+      }
+    }
+  }
+
+  public fileOver(event: any) {
+    console.log(event);
+  }
+
+  public fileLeave(event: any) {
+    console.log(event);
+  }
 
   addService() {
     // var intitule = (<HTMLInputElement>document.getElementById("intitule")).value;
@@ -83,16 +205,31 @@ export class ServicesComponent implements OnInit {
     console.log('prix:' + this.prix);
     console.log('duree:' + this.duree);
     console.log('commission:' + this.commission);
+    console.log('image:' + this.image);
 
 
 
     if (this.intitule == "" || this.description == "" || this.prix == "" || this.duree == "" || this.commission == "") {
       this.afficherAlerteChamp = true;
+      this.alerts.unshift({
+        id: 0,
+        type: 'danger',
+        strong: 'Error!',
+        message: 'Veuillez remplir tous les champs',
+        icon: 'fa fa-info'
+      });
     }
 
     if (!Number.isInteger(parseInt(this.prix, 10)) || !Number.isInteger(parseInt(this.duree, 10)) || !Number.isInteger(parseInt(this.commission, 10))
       || isNaN(parseFloat(this.prix)) || isNaN(parseFloat(this.duree)) || isNaN(parseFloat(this.commission))) {
       this.afficherAlerteNumber = true;
+      this.alerts.unshift({
+        id: 0,
+        type: 'danger',
+        strong: 'Error!',
+        message: 'Prix/Durée/Commission doit être un nombre.',
+        icon: 'fa fa-info'
+      });
     }
 
     if (debut > fin) {
@@ -102,36 +239,104 @@ export class ServicesComponent implements OnInit {
         type: 'danger',
         strong: 'Error!',
         message: 'La date de début est postérieure à la date de fin.',
-        icon: 'ni ni-support-16'
+        icon: 'fa fa-info'
       });
       console.log('La date de début est postérieure à la date de fin');
     }
+
+
 
     else {
       const selectedCompetences = this.competences.filter(comp => comp.isChecked);
       console.log('Compétences sélectionnées:', selectedCompetences);
 
-      var dataObject = {
-        nomService: this.intitule,
-        description: this.description,
-        prix: this.prix,
-        duree: this.duree,
-        commission: this.commission,
-        dateDebut: debut,
-        dateFin: fin,
-        competences: selectedCompetences
-      };
+      const competencesWithoutChecked = selectedCompetences.map(({ isChecked, ...rest }) => rest);
+      console.log('Compétences sans isChecked:', competencesWithoutChecked);
 
-      var jsonData = JSON.stringify(dataObject);
-      console.log('jsonData:' + jsonData);
+      const competencesWithIdAndName = selectedCompetences.map(({ _id, nomCompetence }) => ({ _id, nomCompetence }));
+      console.log('Compétences avec id et nomCompetence:', competencesWithIdAndName);
+
+      // var dataObject = {
+      //   nomService: this.intitule,
+      //   description: this.description,
+      //   prix: this.prix,
+      //   duree: this.duree,
+      //   commission: this.commission,
+      //   dateDebut: debut,
+      //   dateFin: fin,
+      //   image: this.image,
+      //   competences: selectedCompetences
+      // };
+
+      // var jsonData = JSON.stringify(dataObject);
+      // console.log('jsonData:' + jsonData);
 
       // this.http.post(config.apiUrl + 'services', jsonData, { headers: { 'Content-Type': 'application/json' } })
       //   .toPromise().then((res) => {
       //     alert('Service ajoutée');
 
       //   });
-      this.getServices();
+
+
+      var formData = new FormData();
+
+      // Ajoutez les autres champs au FormData
+      formData.append('nomService', this.intitule);
+      formData.append('description', this.description);
+      formData.append('prix', this.prix);
+      formData.append('duree', this.duree);
+      formData.append('commission', this.commission);
+      formData.append('dateDebut', debut);
+      formData.append('dateFin', fin);
+
+      if (this.image) {
+        formData.append('image', this.image);
+      }
+
+      // Ajoutez d'autres champs si nécessaire
+      formData.append('competences', JSON.stringify(competencesWithIdAndName));
+
+      console.log('formData: ' + formData);
+
+      this.http.post(config.apiUrl + 'services', formData)
+        .subscribe((response: any) => {
+          if (response.type === 'success') {
+            this.alerts.unshift({
+              id: 0,
+              type: response.type,
+              strong: response.type + '! ',
+              message: response.messageErreur,
+              icon: 'ni ni-like-2'
+            });
+            // this.getServices();
+            this.router.navigate(['/employes'], {
+              queryParams: {
+                successAjout: "Service ajoutée avec succès"
+              }
+            });
+          } else {
+            this.alerts.unshift({
+              id: 0,
+              type: response.type,
+              strong: response.type + '! ',
+              message: response.messageErreur,
+              icon: 'ni ni-support-16'
+            });
+          }
+
+        }, error => {
+          this.alerts.unshift({
+            id: 0,
+            type: 'danger',
+            strong: 'Error!',
+            message: 'Un problème est survenu lors de l\'ajout d\'un service. Réessayer plus tard.',
+            icon: 'ni ni-support-16'
+        });
+          console.error('Error uploading data', error);
+        });
+
     }
+    this.backup = this.alerts.map((alert: IAlert) => Object.assign({}, alert));
 
   }
 
@@ -170,24 +375,24 @@ export class ServicesComponent implements OnInit {
   open(content, type, modalDimension, service) {
     console.log(service.nom)
     if (modalDimension === 'sm' && type === 'modal_mini') {
-        this.modalService.open(content, { windowClass: 'modal-mini', size: 'sm', centered: true }).result.then((result) => {
-            this.closeResult = `Closed with: ${result}`;
-        }, (reason) => {
-            this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
-        });
+      this.modalService.open(content, { windowClass: 'modal-mini', size: 'sm', centered: true }).result.then((result) => {
+        this.closeResult = `Closed with: ${result}`;
+      }, (reason) => {
+        this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
+      });
     } else if (modalDimension === '' && type === 'Notification') {
       this.modalService.open(content, { windowClass: 'modal-danger', centered: true }).result.then((result) => {
-          this.closeResult = `Closed with: ${result}`;
+        this.closeResult = `Closed with: ${result}`;
       }, (reason) => {
-          this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
+        this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
       });
     } else {
-        this.modalService.open(content,{ centered: true }).result.then((result) => {
-            this.closeResult = `Closed with: ${result}`;
-        }, (reason) => {
-            this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
-        });
-        
+      this.modalService.open(content, { centered: true }).result.then((result) => {
+        this.closeResult = `Closed with: ${result}`;
+      }, (reason) => {
+        this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
+      });
+
     }
 
     // console.log('service.dateDebutField : ', service.dateDebutField);
@@ -198,11 +403,11 @@ export class ServicesComponent implements OnInit {
     this.prixField = service.prix;
     this.dureeField = service.duree;
     this.commissionField = service.commission;
-    if(service.dateDebut !== null && service.dateFin !== null ) {
+    if (service.dateDebut !== null && service.dateFin !== null) {
       this.dateDebutField = service.dateDebut.split("T")[0];
       this.dateFinField = service.dateFin.split("T")[0];
     }
-    
+
     this.competencesField = service.competences;
 
     console.log('Intitule : ', this.intituleField);
@@ -214,97 +419,139 @@ export class ServicesComponent implements OnInit {
     console.log('Date Fin : ', this.dateFinField);
     console.log('Competences : ', this.competencesField);
 
-    if(this.form) {
-      this.form.setValue({
-        intitule: this.intituleField,  
-        description: this.descriptionField, 
-        prix: this.prixField,  
-        duree: this.dureeField, 
-        commission: this.commissionField, 
-        dateDebut: this.dateDebutField,  
-        dateFin: this.dateFinField
-      });
-    }
-    
-    console.log('this.form'+' : ', this.form);
+    // if(this.form) {
+    //   this.form.setValue({
+    //     intitule: this.intituleField,  
+    //     description: this.descriptionField, 
+    //     prix: this.prixField,  
+    //     duree: this.dureeField, 
+    //     commission: this.commissionField, 
+    //     dateDebut: this.dateDebutField,  
+    //     dateFin: this.dateFinField
+    //   });
+    // }
 
-}
+    // console.log('this.form'+' : ', this.form);
 
-private getDismissReason(reason: any): string {
-  if (reason === ModalDismissReasons.ESC) {
-      return 'by pressing ESC';
-  } else if (reason === ModalDismissReasons.BACKDROP_CLICK) {
-      return 'by clicking on a backdrop';
-  } else {
-      return  `with: ${reason}`;
   }
-}
 
-updateService() {
-  console.log("updateeee")
-  console.log('Intitule : ', this.intituleField);
+  private getDismissReason(reason: any): string {
+    if (reason === ModalDismissReasons.ESC) {
+      return 'by pressing ESC';
+    } else if (reason === ModalDismissReasons.BACKDROP_CLICK) {
+      return 'by clicking on a backdrop';
+    } else {
+      return `with: ${reason}`;
+    }
+  }
+
+  updateService() {
+    console.log("updateeee")
+    console.log('Intitule : ', this.intituleField);
     console.log('Description : ', this.descriptionField);
     console.log('Prix : ', this.prixField);
     console.log('Durée : ', this.dureeField);
     console.log('Commision : ', this.commissionField);
-    console.log('this.form'+' : ', this.form);
+    console.log('this.form' + ' : ', this.form);
 
-  if (typeof this.dateDebutField === 'object' && this.dateDebutField instanceof Object) {
-    this.dateDebutField = `${this.dateDebutField.year}-${this.pad(this.dateDebutField.month)}-${this.pad(this.dateDebutField.day)}`;
+    if (typeof this.dateDebutField === 'object' && this.dateDebutField instanceof Object) {
+      this.dateDebutField = `${this.dateDebutField.year}-${this.pad(this.dateDebutField.month)}-${this.pad(this.dateDebutField.day)}`;
+    }
+
+    if (typeof this.dateFinField === 'object' && this.dateFinField instanceof Object) {
+      this.dateFinField = `${this.dateFinField.year}-${this.pad(this.dateFinField.month)}-${this.pad(this.dateFinField.day)}`;
+    }
+
+    if (new Date(this.dateDebutField) > new Date(this.dateFinField)) {
+      this.afficherAlerteDate = true;
+    }
+
+    else {
+      console.log('dateDebutField:', this.dateDebutField);
+      console.log('dateFinField:', this.dateFinField);
+      console.log('Competences:', this.competencesField);
+
+      //   var dataObject = {
+      //     nomService: this.intituleField,
+      //     description: this.descriptionField,
+      //     prix: this.prixField,
+      //     duree: this.dureeField,
+      //     commission: this.commissionField,
+      //     dateDebut: this.dateDebutField,
+      //     dateFin: this.dateFinField,
+      //     competences: this.competencesField
+      //   };
+
+      // var jsonData = JSON.stringify(dataObject);
+      // console.log('jsonData:' + jsonData);
+
+      // this.http.put(config.apiUrl + 'services/'+ this.idService, jsonData, { headers: { 'Content-Type': 'application/json' } })
+      //   .toPromise().then((res) => {
+      //     alert('Service modifie');
+
+      // });
+
+
+      var formData = new FormData();
+
+      // Ajoutez les autres champs au FormData
+      formData.append('nomService', this.intituleField);
+      formData.append('description', this.descriptionField);
+      formData.append('prix', this.prixField);
+      formData.append('duree', this.dureeField);
+      formData.append('commission', this.commissionField);
+      formData.append('dateDebut', this.dateDebutField);
+      formData.append('dateFin', this.dateFinField);
+
+      if (this.imageField) {
+        formData.append('image', this.imageField);
+      }
+
+      const selectedCompetences = this.competencesField.filter(comp => comp.isChecked);
+      console.log('Compétences sélectionnées:', selectedCompetences);
+      // Ajoutez d'autres champs si nécessaire
+      formData.append('competences', JSON.stringify(selectedCompetences));
+
+      console.log('formData: ' + formData);
+
+      this.http.put(config.apiUrl + 'services/' + this.idService, formData)
+        .subscribe((response: any) => {
+          console.log('Data uploaded successfully', response);
+          alert('Service modifiée');
+          this.getServices();
+        }, error => {
+          console.error('Error uploading data', error);
+        });
+
+    }
   }
 
-  if (typeof this.dateFinField === 'object' && this.dateFinField instanceof Object) {
-    this.dateFinField = `${this.dateFinField.year}-${this.pad(this.dateFinField.month)}-${this.pad(this.dateFinField.day)}`;
+  pad(value: number): string {
+    return value < 10 ? `0${value}` : `${value}`;
   }
-
-  if(new Date(this.dateDebutField) > new Date(this.dateFinField)) {
-    this.afficherAlerteDate = true;
-  }
-
-  else {
-    console.log('dateDebutField:', this.dateDebutField);
-    console.log('dateFinField:', this.dateFinField);
-    console.log('Competences:', this.competencesField);
-    
-      var dataObject = {
-        nomService: this.intituleField,
-        description: this.descriptionField,
-        prix: this.prixField,
-        duree: this.dureeField,
-        commission: this.commissionField,
-        dateDebut: this.dateDebutField,
-        dateFin: this.dateFinField,
-        competences: this.competencesField
-      };
-
-    var jsonData = JSON.stringify(dataObject);
-    console.log('jsonData:' + jsonData);
-
-    // this.http.put(config.apiUrl + 'services/'+ this.idService, jsonData, { headers: { 'Content-Type': 'application/json' } })
-    //   .toPromise().then((res) => {
-    //     alert('Service modifie');
-
-    // });
-
-    this.getServices();
-  }
-}
-
-pad(value: number): string {
-  return value < 10 ? `0${value}` : `${value}`;
-}
 
   deleteService(serviceId: string) {
-    console.log('this.form'+' : ', this.form);
 
-    // this.http.delete(config.apiUrl + 'services/'+ serviceId)
-    // .toPromise().then((res) => {
-    //   this.getServices();
-    //   alert('Le service a bien été supprime');
-    // });
+    this.http.delete(config.apiUrl + 'services/' + serviceId)
+      .toPromise().then((res) => {
+        this.getServices();
+        alert('Le service a bien été supprime');
+      });
   }
 
   ngOnInit() {
+    this.route.queryParams.subscribe(params => {
+      const successAjout = params['successAjout'];
+      if (successAjout) {
+        this.alerts.unshift({
+          id: 0,
+          type: 'success',
+          strong: 'Success! ',
+          message: successAjout,
+          icon: 'ni ni-like-2'
+        });
+      }
+    });
     this.getServices();
     this.getCompetences();
   }
