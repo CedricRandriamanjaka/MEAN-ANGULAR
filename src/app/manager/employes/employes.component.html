@@ -129,8 +129,24 @@
         <h2 class="display-3">Employés</h2>
       </div>
     </div>
+    <div class="col-lg-12">
+      <div class="row">
+        <div class="col-lg-4"></div>
+        <div class="col-lg-4"></div>
+        <div class="col-lg-4">
+          <div class="form-group" [ngClass]="{'focused':focus===true}">
+            <div class="input-group mb-4">
+              <div class="input-group-prepend">
+                <span class="input-group-text"><i class="ni ni-zoom-split-in"></i></span>
+              </div>
+              <input class="form-control" placeholder="Search" [(ngModel)]="searchText" type="text" (focus)="focus=true" (blur)="focus=false">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="row">
-      <div class="col-md-6 col-lg-4 mb-4" *ngFor="let employe of employees; let i = index;">
+      <div class="col-md-6 col-lg-4 mb-4" *ngFor="let employe of employees | filter:searchText; let i = index;">
         <div class="px-4">
           <img *ngIf="employe.image !=='' && employe.image !== null; else noImage" [src]="urlImage + employe.image"
             class="img-center img-fluid shadow shadow-lg--hover" style="width: 200px" alt="Description de l'image" />

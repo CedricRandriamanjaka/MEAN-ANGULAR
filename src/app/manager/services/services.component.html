@@ -3,33 +3,33 @@
   <br><br>
   <br><br> -->
 
-  <div class="alert-container">
-    <div *ngFor="let alert of alerts">
-      <ngb-alert [type]="alert.type" [dismissible]="true" (close)="close(alert)">
-        <ng-container *ngIf="alert.icon">
-          <div class="alert-inner--icon">
-            <i class="{{alert.icon}}"></i>
-          </div>
-        </ng-container>
-        <span class="alert-inner--text"> <strong>{{alert.strong}} </strong>{{ alert.message }}</span>
-      </ngb-alert>
-    </div>
+<div class="alert-container">
+  <div *ngFor="let alert of alerts">
+    <ngb-alert [type]="alert.type" [dismissible]="true" (close)="close(alert)">
+      <ng-container *ngIf="alert.icon">
+        <div class="alert-inner--icon">
+          <i class="{{alert.icon}}"></i>
+        </div>
+      </ng-container>
+      <span class="alert-inner--text"> <strong>{{alert.strong}} </strong>{{ alert.message }}</span>
+    </ngb-alert>
   </div>
-  
-  <style>
-    /* signup.component.scss */
-    .alert-container {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 1000;
-      width: 300px;
-    }
-  
-    .alert {
-      margin-bottom: 10px;
-    }
-  </style>
+</div>
+
+<style>
+  /* signup.component.scss */
+  .alert-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    width: 300px;
+  }
+
+  .alert {
+    margin-bottom: 10px;
+  }
+</style>
 
 <section class="section section-lg bg-gradient-default">
   <div class="container pt-lg pb-300">
@@ -55,12 +55,13 @@
           <div class="card-body p-lg-5">
             <h4 class="mb-1">Ajouter un service</h4>
             <div class="form-group mb-mt-4">
-              <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="dropped($event)" 
-              (onFileOver)="fileOver($event)" (onFileLeave)="fileLeave($event)">
-                  <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
-                    <div class="mr-2">Déposer votre image ici</div>
-                    <button type="button" class="btn btn-sm btn-outline-primary" (click)="openFileSelector()">Importer image</button>
-                  </ng-template>
+              <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="dropped($event)"
+                (onFileOver)="fileOver($event)" (onFileLeave)="fileLeave($event)">
+                <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+                  <div class="mr-2">Déposer votre image ici</div>
+                  <button type="button" class="btn btn-sm btn-outline-primary" (click)="openFileSelector()">Importer
+                    image</button>
+                </ng-template>
               </ngx-file-drop>
             </div>
             <div class="form-group mb-4" [ngClass]="{ focused: focus === true }">
@@ -144,19 +145,36 @@
   <div class="row justify-content-center">
     <h2>Services</h2>
     <div class="col-lg-12">
+      <div class="row">
+        <div class="col-lg-4"></div>
+        <div class="col-lg-4"></div>
+        <div class="col-lg-4">
+          <div class="form-group" [ngClass]="{'focused':focus===true}">
+            <div class="input-group mb-4">
+              <div class="input-group-prepend">
+                <span class="input-group-text"><i class="ni ni-zoom-split-in"></i></span>
+              </div>
+              <input class="form-control" placeholder="Search" [(ngModel)]="searchText" type="text" (focus)="focus=true" (blur)="focus=false">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-12">
       <div class="row row-grid">
 
-        <div class="col-lg-4 mb-4" *ngFor="let service of services">
+        <div class="col-lg-4 mb-4" *ngFor="let service of services | filter:searchText">
           <div class="card card-lift--hover shadow border-0 flex-fill">
             <div class="card-body py-5">
               <div class="rounded-circle mb-4">
-              
-                  <img *ngIf="service.image !=='' && service.image !== null; else noImage" [src]="urlImage + service.image"
-                  class="img-center img-fluid shadow shadow-lg--hover" style="width: 75px" alt="Description de l'image"/>
-                  <ng-template #noImage>
-                    <img src="./assets/img/theme/team-1-800x800.jpg"
-                  class="img-center img-fluid shadow shadow-lg--hover" style="width: 75px" />
-                  </ng-template>
+
+                <img *ngIf="service.image !=='' && service.image !== null; else noImage"
+                  [src]="urlImage + service.image" class="img-center img-fluid shadow shadow-lg--hover"
+                  style="width: 75px" alt="Description de l'image" />
+                <ng-template #noImage>
+                  <img src="./assets/img/theme/team-1-800x800.jpg" class="img-center img-fluid shadow shadow-lg--hover"
+                    style="width: 75px" />
+                </ng-template>
               </div>
               <div class="text-center">
                 <h6 class="text-primary text-uppercase">{{ service.nom }}</h6>
@@ -242,36 +260,37 @@
               <div class="form-group mb-3" [ngClass]="{ focused: focus2 === true }">
                 <label for="intitule">Intitulé</label>
                 <div class="input-group input-group-alternative">
-                  <input class="form-control" id="intitule" name="intitule" [(ngModel)]="intituleField" type="text" (focus)="focus2 = true"
-                    (blur)="focus2 = false" ngModel />
+                  <input class="form-control" id="intitule" name="intitule" [(ngModel)]="intituleField" type="text"
+                    (focus)="focus2 = true" (blur)="focus2 = false" ngModel />
                 </div>
               </div>
               <div class="form-group mb-3" [ngClass]="{ focused: focus3 === true }">
                 <label for="description">Description</label>
                 <div class="input-group input-group-alternative">
-                  <textarea class="form-control" id="description" name="description" [(ngModel)]="descriptionField" type="text" (focus)="focus3 = true"
-                    (blur)="focus3 = false" maxlength="500" minlength="100" ngModel ></textarea>
+                  <textarea class="form-control" id="description" name="description" [(ngModel)]="descriptionField"
+                    type="text" (focus)="focus3 = true" (blur)="focus3 = false" maxlength="500" minlength="100"
+                    ngModel></textarea>
                 </div>
               </div>
               <div class="form-group mb-3" [ngClass]="{ focused: focus4 === true }">
                 <label for="prix">Prix : en Ariary</label>
                 <div class="input-group input-group-alternative">
-                  <input class="form-control" id="prix" name="prix" type="text" [(ngModel)]="prixField" (focus)="focus4 = true"
-                    (blur)="focus4 = false" ngModel />
+                  <input class="form-control" id="prix" name="prix" type="text" [(ngModel)]="prixField"
+                    (focus)="focus4 = true" (blur)="focus4 = false" ngModel />
                 </div>
               </div>
               <div class="form-group mb-3" [ngClass]="{ focused: focus5 === true }">
                 <label for="duree">Durée : en Heures</label>
                 <div class="input-group input-group-alternative">
-                  <input class="form-control" id="duree" name="duree" type="text" [(ngModel)]="dureeField" (focus)="focus5 = true"
-                    (blur)="focus5 = false" ngModel />
+                  <input class="form-control" id="duree" name="duree" type="text" [(ngModel)]="dureeField"
+                    (focus)="focus5 = true" (blur)="focus5 = false" ngModel />
                 </div>
               </div>
               <div class="form-group mb-3" [ngClass]="{ focused: focus6 === true }">
                 <label for="commission">Commission : en %</label>
                 <div class="input-group input-group-alternative">
-                  <input class="form-control" id="commission" name="commission" [(ngModel)]="commissionField" type="text" (focus)="focus6 = true"
-                    (blur)="focus6 = false" ngModel />
+                  <input class="form-control" id="commission" name="commission" [(ngModel)]="commissionField"
+                    type="text" (focus)="focus6 = true" (blur)="focus6 = false" ngModel />
                 </div>
               </div>
 
@@ -290,15 +309,17 @@
                     </div>
                   </div>
                 </div>
-                </div>
-                <div *ngFor="let alert of alerts">
-                  <c-alert [type]="alert.type" [strong]="alert.strong" [message]="alert.message" [icon]="alert.icon"></c-alert>
-                </div>
-                
-                <c-alert color="danger" *ngIf="afficherAlerteDate">La date de début est postérieure à la date de fin.</c-alert>
-                <c-alert color="danger" *ngIf="afficherAlerteChamp">Veuillez remplir tous les champs.</c-alert>
-                <c-alert color="danger" *ngIf="afficherAlerteNumber">Numberrr.</c-alert>
-  
+              </div>
+              <div *ngFor="let alert of alerts">
+                <c-alert [type]="alert.type" [strong]="alert.strong" [message]="alert.message" [icon]="alert.icon">
+                </c-alert>
+              </div>
+
+              <c-alert color="danger" *ngIf="afficherAlerteDate">La date de début est postérieure à la date de fin.
+              </c-alert>
+              <c-alert color="danger" *ngIf="afficherAlerteChamp">Veuillez remplir tous les champs.</c-alert>
+              <c-alert color="danger" *ngIf="afficherAlerteNumber">Numberrr.</c-alert>
+
 
               <div class="text-center">
                 <input type="submit" class="btn btn-primary my-4" value="Modifier" />

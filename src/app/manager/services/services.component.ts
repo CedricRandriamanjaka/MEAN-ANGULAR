@@ -16,6 +16,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 export class ServicesComponent implements OnInit {
 
   estEnModeModification: boolean = false;
+  searchText: any;
 
   public alerts: Array<IAlert> = [];
   private backup: Array<IAlert>;

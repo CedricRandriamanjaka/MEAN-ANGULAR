@@ -16,6 +16,8 @@ import { NgForm } from '@angular/forms';
 })
 export class EmployesComponent implements OnInit {
 
+  searchText:any;
+
   nom: string = "";
   prenom: string = "";
   email: string = "";
