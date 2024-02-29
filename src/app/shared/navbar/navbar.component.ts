@@ -82,6 +82,7 @@ export class NavbarComponent implements OnInit {
 
   logout(): void {
     this.authService.logout();
+    this.role = this.cookieService.get('userRole');
   }
 
   chargeHisto() {
@@ -110,5 +111,16 @@ export class NavbarComponent implements OnInit {
         }
     );
     }
+
+    getLinkByRole(): string {
+      this.role = this.cookieService.get('userRole');
+      if (this.role === '1') {
+        return '/home-client';
+      } else if (this.role === '2') {
+        return '/home-employe';
+      }
+      return '/home-client';
+    }
+    
 
 }

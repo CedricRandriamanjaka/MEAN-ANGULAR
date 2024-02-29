@@ -1,10 +1,7 @@
 <nav id="navbar-main"
   class="navbar navbar-main navbar-expand-lg navbar-transparent navbar-light headroom headroom--top headroom--pinned">
   <div class="container">
-    <a class="navbar-brand mr-lg-5" [routerLink]="['/home-client']" *ngIf="role=='1'">
-      <img src="./assets/img/brand/BORABORA.png">
-    </a>
-    <a class="navbar-brand mr-lg-5" [routerLink]="['/home-employe']" *ngIf="role=='2'">
+    <a class="navbar-brand mr-lg-5" [routerLink]="getLinkByRole()">
       <img src="./assets/img/brand/BORABORA.png">
     </a>
     <button class="navbar-toggler" type="button" (click)="isCollapsed = !isCollapsed"
@@ -15,10 +12,7 @@
       <div class="navbar-collapse-header">
         <div class="row">
           <div class="col-6 collapse-brand">
-            <a [routerLink]="['/home-client']" *ngIf="role=='1'">
-              <img src="./assets/img/brand/logo.png">
-            </a>
-            <a [routerLink]="['/home-employe']" *ngIf="role=='2'">
+            <a [routerLink]="getLinkByRole()">
               <img src="./assets/img/brand/logo.png">
             </a>
           </div>
