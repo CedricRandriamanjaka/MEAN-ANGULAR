@@ -9,6 +9,7 @@ import { ProfileUtilisateur } from './profile-utilisateur/profile.component';
 import { SignupComponent } from './signup/signup.component';
 import { LandingComponent } from './landing/landing.component';
 import { detail } from './detail-service/landing.component';
+import { HomeEmploye } from './home-employe/landing.component';
 import { LoginComponent } from './login/login.component';
 
 @Injectable({
@@ -41,6 +42,7 @@ export class AuthGuard implements CanActivate {
 const routes: Routes = [
   { path: 'home', component: HomeComponent, canActivate: [AuthGuard] }, // Restreignez l'accès à Home
   { path: 'home-client', component: HomeClient },
+  { path: 'home-employe', component: HomeEmploye, canActivate: [AuthGuard]  },
   { path: 'user-profile', component: ProfileUtilisateur, canActivate: [AuthGuard] }, // Restreignez l'accès au profile utilisateur
   { path: 'register', component: SignupComponent },
   { path: 'landing', component: LandingComponent, canActivate: [AuthGuard] }, // Restreignez l'accès à Landing

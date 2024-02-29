@@ -16,10 +16,11 @@ export class ProfileUtilisateur implements OnInit {
 
     employes: any;
     favoris:any;
+    public role;
 
     competencesUpdated: EventEmitter<any> = new EventEmitter<any>();
     favorisUpdated: EventEmitter<any> = new EventEmitter<any>();
-    readonly ApiUrl = "https://mean-m1-1-nz0z.onrender.com/api/";
+    readonly ApiUrl = "http://localhost:3000/api/";
 
     constructor(private modalService: NgbModal, private http: HttpClient, private cookieService: CookieService) { }
 
@@ -33,6 +34,7 @@ export class ProfileUtilisateur implements OnInit {
         });
 
         const userId = this.cookieService.get('userId');
+        this.role =this.cookieService.get('userRole');
         if (userId) {
             this.getUtilisateur(userId);
             this.getCompetencesUtilisateur(userId);
@@ -108,8 +110,10 @@ export class ProfileUtilisateur implements OnInit {
 
 
     ajouterCompetenceUtilisateur(competenceId: string): void {
+        this.competencesUtilisateur = this.competencesUtilisateur.filter(comp => comp._id !== competenceId);
         const userId = this.utilisateur._id;
         const competenceToAdd = this.competences.find(comp => comp._id === competenceId); // Trouver la compétence dans la liste complète des compétences
+        this.competencesUtilisateur.push(competenceToAdd); // Ajouter la compétence à la liste locale si elle existe
     
         this.http.post(this.ApiUrl + 'profilEmployeretClient/competences/ajout/' + userId, { competenceID: competenceId })
             .subscribe(
@@ -117,14 +121,12 @@ export class ProfileUtilisateur implements OnInit {
                     if(data){
 
                         // Mise à jour locale des compétences de l'utilisateur
-                        if (competenceToAdd) {
-                            this.competencesUtilisateur.push(competenceToAdd); // Ajouter la compétence à la liste locale si elle existe
-                        }
                         this.competencesUpdated.emit(this.competencesUtilisateur); // Émettre l'événement avec les données mises à jour
                         console.log('Compétences utilisateur mises à jour:', JSON.stringify(this.competencesUtilisateur));
                     }
                 },
                 (error) => {
+        this.competencesUtilisateur = this.competencesUtilisateur.filter(comp => comp._id !== competenceId);
                     console.error('Erreur lors de l\'ajout de la compétence à l\'utilisateur:', error);
                 }
             );

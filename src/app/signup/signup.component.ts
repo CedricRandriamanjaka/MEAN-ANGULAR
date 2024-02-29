@@ -41,7 +41,7 @@ export class SignupComponent implements OnInit {
             motdepasse: this.motDePasse
         };
 
-        this.http.post<any>('https://mean-m1-1-nz0z.onrender.com/api/utilisateur/inscription', userData)
+        this.http.post<any>('http://localhost:3000/api/utilisateur/inscription', userData)
             .subscribe(
                 response => {
 

@@ -8,6 +8,8 @@ import interactionPlugin from '@fullcalendar/interaction';
 import { Draggable } from '@fullcalendar/interaction';
 import { CookieService } from 'ngx-cookie-service';
 import * as moment from 'moment';
+import { IAlert } from '../sections/alerts-section/alerts-section.component'; // Importez l'interface IAlert
+
 
 @Component({
   selector: 'app-landing',
@@ -33,8 +35,16 @@ export class detail implements OnInit {
   nouvelIntervalDebut: any;
   currentEmpID: any;
 
+  public alerts: Array<IAlert> = [];
+    private backup: Array<IAlert>;
+
+    // Fonction pour fermer une alerte
+    close(alert: IAlert) {
+      this.alerts.splice(this.alerts.indexOf(alert), 0);
+  }
+
   constructor(private modalService: NgbModal, private route: ActivatedRoute, private router: Router, private http: HttpClient, private cookieService: CookieService) { }
-  readonly ApiUrl = "https://mean-m1-1-nz0z.onrender.com/api/";
+  readonly ApiUrl = "http://localhost:3000/api/";
 
   private initialiserFullCalendar() {
     var now = new Date();
@@ -215,9 +225,23 @@ export class detail implements OnInit {
       this.http.post<any>(`${this.ApiUrl}rendezVous/ajouterRDV/${this.cookieService.get('userId')}/${this.currentEmpID}/${this.service._id}/${dateToSend}`, {})
         .subscribe(
           (data) => {
-            alert(data);
+            // alert(data);
+            this.alerts.unshift({
+              id: 0,
+              type: 'success',
+              strong: 'reussit' + '! ',
+              message: 'votre rendez vous e ete enregistre pour le '+dateToSend,
+              icon: 'ni ni-like-2'
+          });
           },
           (error) => {
+            this.alerts.unshift({
+              id: 0,
+              type: 'error',
+              strong: 'erreur' + '! ',
+              message: 'une erreur s est produit lors du prise de rendez vous , ne vous inquiete pas, aucun payement n as ete realise',
+              icon: 'ni ni-support-16'
+          });
             console.error('Erreur lors de l\'ajout du rendez-vous :', error);
           }
         );

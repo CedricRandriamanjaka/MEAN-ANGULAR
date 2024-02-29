@@ -1,5 +1,38 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 
+
+
+<!-- signup.component.html -->
+<div class="alert-container">
+  <div *ngFor="let alert of alerts">
+    <ngb-alert [type]="alert.type" [dismissible]="true" (close)="close(alert)">
+      <ng-container *ngIf="alert.icon">
+        <div class="alert-inner--icon">
+          <i class="{{alert.icon}}"></i>
+        </div>
+      </ng-container>
+      <span class="alert-inner--text"> <strong>{{alert.strong}} </strong>{{ alert.message }}</span>
+    </ngb-alert>
+  </div>
+</div>
+
+<style>
+  /* signup.component.scss */
+  .alert-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    width: 300px;
+  }
+
+  .alert {
+    margin-bottom: 10px;
+  }
+</style>
+
+
+
 <main>
   <div class="position-relative">
     <!-- shape Hero -->
@@ -83,16 +116,49 @@
                       </div>
                     </div>
                   </div>
-                  <div class="row" *ngIf="employes.length != 0">
-                    <h6>no employe disponible</h6>
-                    <div class="col-md-2" *ngFor="let employe of employes; let i = index">
-                      <img src="./assets/img/theme/team-1-800x800.jpg"
-                        class="rounded-circle img-center img-fluid shadow shadow-lg--hover" style="width: 200px;">
-                      <div class="pt-4 text-center">
-                        <input type="radio" name="emp" class="form-control" (click)="getIndispoDate(employe._id)"><span
-                          class="d-block mb-1">{{ employe.nom }} {{ employe.prenom }}</span>
-                      </div>
+                  <div class="row d-flex justify-content-around" *ngIf="employes.length != 0">
+                    <div class="col-lg-12 text-center">
+                      <h6>no employe disponible</h6>
                     </div>
+                    <div class="col-md-2" *ngFor="let employe of employes; let i = index">
+                      <label class="image-checkbox text-center d-block mb-4">
+                        <input type="radio" name="emp" class="form-control visually-hidden"
+                          (click)="getIndispoDate(employe._id)">
+                        <img src="./assets/img/theme/team-1-800x800.jpg"
+                          class="sary rounded-circle img-center img-fluid shadow shadow-lg--hover"
+                          style="width: 200px;">
+                        <div class="pt-4">
+                          <span class="d-block mb-1">{{ employe.nom }} {{ employe.prenom }}</span>
+                        </div>
+                      </label>
+                    </div>
+
+                    <style>
+                      /* CSS pour masquer l'input radio et ajouter le visuel de sélection */
+                      .visually-hidden {
+                        position: absolute !important;
+                        overflow: hidden;
+                        clip: rect(0 0 0 0);
+                        height: 1px;
+                        width: 1px;
+                        margin: -1px;
+                        padding: 0;
+                        border: 0;
+                      }
+
+                      .sary:hover {
+                        border: 10px solid rgb(69, 216, 69);
+                      }
+
+                      .sary:focus {
+                        border: 10px solid rgb(49, 144, 254);
+                      }
+
+                      /* CSS pour le visuel de sélection */
+                      .image-checkbox .selected {
+                        border: 2px solid #007bff;
+                      }
+                    </style>
                   </div>
                   <div class="row text-center" *ngIf="employes.length == 0">
                     <div class="col-md-12 text-center">
@@ -249,8 +315,7 @@
                 <ng-template #classic let-c="close" let-d="dismiss">
                   <div class="modal-content">
                     <div class="modal-header">
-                      <h6 class="modal-title" id="modal-title-default">finalisation de payement pour un render-vous le
-                        {{nouvelIntervalDebut}}</h6>
+                      <h6 class="modal-title" id="modal-title-default">finalisation de payement pour un render-vous</h6>
                       <button type="button" class="close" data-dismiss="modal" aria-label="Close"
                         (click)="d('Cross click')">
                         <span aria-hidden="true">×</span>

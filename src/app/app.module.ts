@@ -12,6 +12,7 @@ import { LandingComponent } from './landing/landing.component';
 import { detail } from './detail-service/landing.component';
 import { ProfileUtilisateur } from './profile-utilisateur/profile.component';
 import { HomeComponent } from './home/home.component';
+import { HomeEmploye } from './home-employe/landing.component';
 import { NavbarComponent } from './shared/navbar/navbar.component';
 import { FooterComponent } from './shared/footer/footer.component';
 import { FullCalendarModule } from '@fullcalendar/angular';
@@ -21,11 +22,13 @@ import { HomeModuleClient } from './home-utilisateur/home.module';
 import { LoginComponent } from './login/login.component';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { CommonModule, DatePipe } from '@angular/common';
 
 @NgModule({
   declarations: [
     AppComponent,
     SignupComponent,
+    HomeEmploye,
     LandingComponent,
     detail,
     ProfileUtilisateur,
@@ -34,6 +37,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     LoginComponent
   ],
   imports: [
+    CommonModule,
     BrowserModule,
     NgbModule,
     HttpClientModule, // Ajouter HttpClientModule ici
@@ -45,7 +49,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     FullCalendarModule,
     BrowserAnimationsModule,
   ],
-  providers: [],
+  providers: [
+    DatePipe,
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

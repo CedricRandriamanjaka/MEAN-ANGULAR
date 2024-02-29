@@ -21,6 +21,7 @@ export class AuthService {
 
   public logout(): void {
     this.cookieService.deleteAll();
+    this.cookieService.set('userRole','100');
     this.updateLoggedInStatus();
   }
 }

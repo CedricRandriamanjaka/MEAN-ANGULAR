@@ -41,7 +41,7 @@ export class LoginComponent implements OnInit {
       email: this.email,
       motdepasse: this.motdepasse
     }
-    this.http.post<any>('https://mean-m1-1-nz0z.onrender.com/api/utilisateur/connection', user)
+    this.http.post<any>('http://localhost:3000/api/utilisateur/connection', user)
       .subscribe(
         response => {
           
@@ -51,7 +51,7 @@ export class LoginComponent implements OnInit {
               this.router.navigate(['/home-client']);
             }
             else if (response.role === 2) {
-              this.router.navigate(['/profile']);
+              this.router.navigate(['/home-employe']);
             }
             else if (response.role === 3) {
               this.router.navigate(['/home']);

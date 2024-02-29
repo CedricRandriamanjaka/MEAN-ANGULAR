@@ -30,7 +30,7 @@ export class NavbarComponent implements OnInit {
   public role = this.cookieService.get('userRole');
 
   public histo;
-  readonly ApiUrl = "https://mean-m1-1-nz0z.onrender.com/api/";
+  readonly ApiUrl = "http://localhost:3000/api/";
 
   constructor(public location: Location, private router: Router, private http: HttpClient,private cookieService: CookieService,private authService: AuthService) {
   }
@@ -56,6 +56,8 @@ export class NavbarComponent implements OnInit {
       this.lastPoppedUrl = ev.url;
     });
     this.authService.updateLoggedInStatus();
+    this.role = this.cookieService.get('userRole');
+
   }
 
   isHome() {
