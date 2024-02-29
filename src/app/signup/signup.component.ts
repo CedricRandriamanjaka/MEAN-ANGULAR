@@ -25,6 +25,10 @@ export class SignupComponent implements OnInit {
     focusEmail: boolean;
     focusMotDePasse: boolean;
 
+    readonly ApiUrl = "https://mean-m1-1-vten.onrender.com/api/";
+    // readonly ApiUrl = "http://localhost:3000/api/";
+
+
     constructor(private http: HttpClient, private router: Router) { }
 
     ngOnInit() { }
@@ -41,7 +45,7 @@ export class SignupComponent implements OnInit {
             motdepasse: this.motDePasse
         };
 
-        this.http.post<any>('http://localhost:3000/api/utilisateur/inscription', userData)
+        this.http.post<any>(this.ApiUrl+'utilisateur/inscription', userData)
             .subscribe(
                 response => {
 

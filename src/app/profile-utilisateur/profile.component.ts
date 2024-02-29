@@ -20,7 +20,8 @@ export class ProfileUtilisateur implements OnInit {
 
     competencesUpdated: EventEmitter<any> = new EventEmitter<any>();
     favorisUpdated: EventEmitter<any> = new EventEmitter<any>();
-    readonly ApiUrl = "http://localhost:3000/api/";
+    // readonly ApiUrl = "http://localhost:3000/api/";
+    readonly ApiUrl = "https://mean-m1-1-vten.onrender.com/api/";
 
     constructor(private modalService: NgbModal, private http: HttpClient, private cookieService: CookieService) { }
 

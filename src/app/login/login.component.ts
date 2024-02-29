@@ -16,6 +16,11 @@ export class LoginComponent implements OnInit {
   focus1;
   email: string;
   motdepasse: string;
+
+  // readonly ApiUrl = "http://localhost:3000/api/";
+  readonly ApiUrl = "https://mean-m1-1-vten.onrender.com/api/";
+
+
   constructor(private route: ActivatedRoute,private cookieService: CookieService,private http: HttpClient, private router: Router,private authService: AuthService) { }
 
   public alerts: Array<IAlert> = [];
@@ -41,7 +46,7 @@ export class LoginComponent implements OnInit {
       email: this.email,
       motdepasse: this.motdepasse
     }
-    this.http.post<any>('http://localhost:3000/api/utilisateur/connection', user)
+    this.http.post<any>(this.ApiUrl+'utilisateur/connection', user)
       .subscribe(
         response => {
           

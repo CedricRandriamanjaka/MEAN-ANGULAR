@@ -16,7 +16,8 @@ export class HomeClient implements OnInit {
   
     constructor(private http: HttpClient, private cookieService: CookieService) { }
 
-    readonly ApiUrl = "http://localhost:3000/api/";
+    // readonly ApiUrl = "http://localhost:3000/api/";
+    readonly ApiUrl = "https://mean-m1-1-vten.onrender.com/api/";
 
       getServices() {
         this.http.get(this.ApiUrl + 'services/nonSpecial')
