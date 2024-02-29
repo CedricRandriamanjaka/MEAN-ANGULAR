@@ -12,11 +12,15 @@ import { detail } from './detail-service/landing.component';
 import { ProfileUtilisateur } from './profile-utilisateur/profile.component';
 import { HomeEmploye } from './home-employe/landing.component';
 import { NavbarComponent } from './shared/navbar/navbar.component';
+import { LandingComponent } from './landing/landing.component';
+import { ProfileComponent } from './profile/profile.component';
+import { HomeComponent } from './home/home.component';
 import { FooterComponent } from './shared/footer/footer.component';
 import { FullCalendarModule } from '@fullcalendar/angular';
 
 import { HomeModuleClient } from './home-utilisateur/home.module';
 import { LoginComponent } from './login/login.component';
+import { HomeManagerModule } from './manager/home-manager/home-manager.module';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CommonModule, DatePipe } from '@angular/common';
@@ -29,8 +33,10 @@ import { CommonModule, DatePipe } from '@angular/common';
     detail,
     ProfileUtilisateur,
     NavbarComponent,
+    LandingComponent,
+    ProfileComponent,
     FooterComponent,
-    LoginComponent
+    LoginComponent,
   ],
   imports: [
     CommonModule,
@@ -46,6 +52,8 @@ import { CommonModule, DatePipe } from '@angular/common';
   ],
   providers: [
     DatePipe,
+    HomeModule,
+    HomeManagerModule
   ],
   bootstrap: [AppComponent]
 })

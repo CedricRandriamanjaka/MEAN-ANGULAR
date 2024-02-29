@@ -9,6 +9,11 @@ import { SignupComponent } from './signup/signup.component';
 import { detail } from './detail-service/landing.component';
 import { HomeEmploye } from './home-employe/landing.component';
 import { LoginComponent } from './login/login.component';
+import { HomeManagerComponent } from './manager/home-manager/home-manager.component';
+import { ServicesComponent } from './manager/services/services.component';
+import { EmployesComponent } from './manager/employes/employes.component';
+import { HoraireEmployeComponent } from './manager/horaire-employe/horaire-employe.component';
+import { DepensesComponent } from './manager/depenses/depenses.component';
 
 @Injectable({
   providedIn: 'root'
@@ -44,6 +49,11 @@ const routes: Routes = [
   { path: 'register', component: SignupComponent },
   { path: 'detail/:id', component: detail, canActivate: [AuthGuard] }, // Restreignez l'accès au détail
   { path: 'login', component: LoginComponent },
+  { path: 'manager', component: HomeManagerComponent },
+  { path: 'services', component: ServicesComponent },
+  { path: 'employes', component: EmployesComponent },
+  { path: 'depenses', component: DepensesComponent },
+  { path: 'horaire/:employeId', component: HoraireEmployeComponent },
   { path: '', redirectTo: 'home-client', pathMatch: 'full' }
 ];
 
