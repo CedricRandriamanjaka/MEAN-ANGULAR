@@ -27,6 +27,8 @@ export class NavbarComponent implements OnInit {
   public userEmail;
   public isLoggedIn = false;
 
+  public role = this.cookieService.get('userRole');
+
   public histo;
   readonly ApiUrl = "https://mean-m1-1-nz0z.onrender.com/api/";
 
