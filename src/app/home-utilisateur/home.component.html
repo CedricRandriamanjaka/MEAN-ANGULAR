@@ -1,7 +1,8 @@
 <main>
   <div class="position-relative">
     <!-- Hero for FREE version -->
-    <section class="section section-lg section-hero section-shaped">
+    <section class="section section-lg section-hero section-shaped"
+      style="background-image: url('./assets/img/theme/produit2.jpg'); background-size: cover;">
       <!-- Background circles -->
       <div class="shape shape-style-1 shape-primary">
         <span class="span-150"></span>
@@ -54,17 +55,21 @@
         <ngb-carousel>
           <ng-template ngbSlide *ngFor="let service of serviceSpecial">
             <div class="row justify-content-between align-items-center">
-              <div class="col-lg-5 mb-5 mb-lg-0">
+              <div class="col-lg-6 mb-5 mb-lg-0">
                 <h1 class="text-white font-weight-light">{{ service.nom }}</h1>
                 <p class="lead text-white mt-4">{{ service.description }}</p>
                 <p class="card-text text-white">Prix: {{ service.prix }}€ | Durée: {{ service.duree }} minutes</p>
                 <div *ngFor="let competenceId of service.competences" class="badge badge-info">{{
                   findCompetenceById(competenceId)?.nomCompetence }}</div>
-                <a [href]="'#/detail/' + service._id" class="btn btn-white mt-4">Voir les détails</a>
+                <div class="mt-4 d-flex justify-content-end">
+                  <!-- Utilisation de d-flex pour flexbox et justify-content-end pour aligner à droite -->
+                  <a [href]="'#/detail/' + service._id" class="btn btn-white">Voir les détails</a>
+                  <!-- Suppression de la classe mt-4 pour éviter l'espacement supplémentaire -->
+                </div>
               </div>
               <div class="col-lg-6 mb-lg-auto">
                 <div class="rounded shadow-lg overflow-hidden bootstrap-slider">
-                  <img class="img-fluid" src="assets/img/theme/2.png">
+                  <img class="img-fluid" src="assets/img/theme/produit.jpg">
                 </div>
               </div>
             </div>
@@ -95,7 +100,7 @@
     <div class="row">
       <div class="col-lg-6 mb-4" *ngFor="let service of serviceCompetence">
         <div class="card bg-default shadow border-0">
-          <img [src]="'./assets/img/theme/2.png'" class="card-img-top">
+          <img [src]="'./assets/img/theme/massage.jpg'" class="card-img-top">
           <blockquote class="card-blockquote">
             <svg preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 583 95" class="svg-bg">
               <polygon points="0,52 583,95 0,95" class="fill-default" />
@@ -139,7 +144,7 @@
 
       <div class="col-lg-6 mb-4" *ngFor="let service of services">
         <div class="card bg-default shadow border-0">
-          <img [src]="'./assets/img/theme/2.png'" class="card-img-top">
+          <img [src]="'./assets/img/theme/massage.jpg'" class="card-img-top">
           <blockquote class="card-blockquote">
             <svg preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 583 95" class="svg-bg">
               <polygon points="0,52 583,95 0,95" class="fill-default" />
