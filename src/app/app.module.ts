@@ -9,34 +9,49 @@ import { AppRoutingModule } from './app.routing';
 import { AppComponent } from './app.component';
 import { SignupComponent } from './signup/signup.component';
 import { LandingComponent } from './landing/landing.component';
-import { ProfileComponent } from './profile/profile.component';
+import { detail } from './detail-service/landing.component';
+import { ProfileUtilisateur } from './profile-utilisateur/profile.component';
 import { HomeComponent } from './home/home.component';
+import { HomeEmploye } from './home-employe/landing.component';
 import { NavbarComponent } from './shared/navbar/navbar.component';
 import { FooterComponent } from './shared/footer/footer.component';
+import { FullCalendarModule } from '@fullcalendar/angular';
 
 import { HomeModule } from './home/home.module';
+import { HomeModuleClient } from './home-utilisateur/home.module';
 import { LoginComponent } from './login/login.component';
+
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { CommonModule, DatePipe } from '@angular/common';
 
 @NgModule({
   declarations: [
     AppComponent,
     SignupComponent,
+    HomeEmploye,
     LandingComponent,
-    ProfileComponent,
+    detail,
+    ProfileUtilisateur,
     NavbarComponent,
     FooterComponent,
     LoginComponent
   ],
   imports: [
+    CommonModule,
     BrowserModule,
     NgbModule,
     HttpClientModule, // Ajouter HttpClientModule ici
     FormsModule,
     RouterModule,
     AppRoutingModule,
-    HomeModule
+    HomeModule,
+    HomeModuleClient,
+    FullCalendarModule,
+    BrowserAnimationsModule,
   ],
-  providers: [],
+  providers: [
+    DatePipe,
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
