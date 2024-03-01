@@ -23,6 +23,7 @@ export class EmployesComponent implements OnInit {
   email: string = "";
   date: string = "";
   genre: string = "";
+  password: string = "";
   image: any = "";
   focus: boolean = false;
 
@@ -37,6 +38,9 @@ export class EmployesComponent implements OnInit {
   focus8: boolean = false;
   focus9: boolean = false;
   focus10: boolean = false;
+
+  focus11: boolean = false;
+  focus12: boolean = false;
 
 
   closeResult: string;
@@ -55,6 +59,7 @@ export class EmployesComponent implements OnInit {
   emailField: string;
   dateNaissanceField: any;
   genreField: string;
+  passwordField: string;
   imageField: any;
 
   @ViewChild('employeForm') form: NgForm;
@@ -85,6 +90,7 @@ export class EmployesComponent implements OnInit {
     this.prenomField = employe.prenom;
     this.genreField = employe.genre;
     this.emailField = employe.email;
+    this.passwordField = employe.motdepasse;
     this.dateNaissanceField = employe.dateNaissance.split("T")[0];
     this.imageField = employe.image;
 
@@ -92,6 +98,7 @@ export class EmployesComponent implements OnInit {
     console.log('prenomField:', this.prenomField);
     console.log('genreField:', this.genreField);
     console.log('emailField:', this.emailField);
+    console.log('passwordField:', this.passwordField);
     console.log('dateNaissanceField:', employe.dateNaissance);
     // if(employe.image ?? false) {
     //   console.log('No Image');
@@ -133,71 +140,47 @@ export class EmployesComponent implements OnInit {
 
     else {
 
-      // var dataObject = {
-      //   nom: this.nom,
-      //   prenom: this.prenom,
-      //   email: this.email,
-      //   dateNaissance: date,
-      //   genre: this.genre,
-      //   motdepasse: "mdp",
-      //   etat: "actif",
-      //   role: 2
-      // };
+      var dataObject = {
+        nom: this.nom,
+        prenom: this.prenom,
+        email: this.email,
+        dateNaissance: date,
+        genre: this.genre,
+        motdepasse: this.password,
+        etat: "actif",
+        role: 2
+      };
 
-      // var jsonData = JSON.stringify(dataObject);
-      // console.log('jsonData:' + jsonData);
+      var jsonData = JSON.stringify(dataObject);
+      console.log('jsonData:' + jsonData);
 
-      // this.http.post(config.apiUrl + 'utilisateur/nouveauUtilisateur', jsonData, { headers: { 'Content-Type': 'application/json' } })
-      //   .toPromise().then((res) => {
-      //     alert('Employe ajouté');
+      this.http.post(config.apiUrl + 'utilisateur/nouveauUtilisateur', jsonData, { headers: { 'Content-Type': 'application/json' } })
+        .toPromise().then((res: any) => {
+          if (res.type === 'success') {
+            this.alerts.unshift({
+              id: 0,
+              type: res.type,
+              strong: res.type + '! ',
+              message: res.messageErreur,
+              icon: 'ni ni-like-2'
+            });
+            this.getAllEmployees();
+            // this.router.navigate(['/employes'], {
+            //   queryParams: {
+            //     successAjout: "Employé ajouté avec succès"
+            //   }
+            // });
+          } else {
+            this.alerts.unshift({
+              id: 0,
+              type: res.type,
+              strong: res.type + '! ',
+              message: res.messageErreur,
+              icon: 'ni ni-support-16'
+            });
+          }
 
-      // });
-
-      var formData = new FormData();
-
-      // Ajoutez les autres champs au FormData
-      formData.append('nom', this.nom);
-      formData.append('prenom', this.prenom);
-      formData.append('email', this.email);
-      formData.append('dateNaissance', date);
-      formData.append('genre', this.genre);
-      formData.append('motdepasse', "mdp");
-      formData.append('etat', "actif");
-      formData.append('role', "2");
-
-      if (this.image) {
-        formData.append('image', this.image);
-      }
-
-      console.log('formData: '+ formData);
-
-      this.http.post(config.apiUrl + 'utilisateur/nouveauUtilisateur', formData)
-      .subscribe((response: any) => {
-        if (response.type === 'success') {
-          this.alerts.unshift({
-            id: 0,
-            type: response.type,
-            strong: response.type + '! ',
-            message: response.messageErreur,
-            icon: 'ni ni-like-2'
-          });
-          this.getAllEmployees();
-          this.router.navigate(['/employes'], {
-            queryParams: {
-              successAjout: "Employé ajouté avec succès"
-            }
-          });
-        } else {
-          this.alerts.unshift({
-            id: 0,
-            type: response.type,
-            strong: response.type + '! ',
-            message: response.messageErreur,
-            icon: 'ni ni-support-16'
-          });
-        }
-
-      }, error => {
+      }).catch((error) => {
         console.error('Error uploading data', error);
         this.alerts.unshift({
           id: 0,
@@ -207,6 +190,61 @@ export class EmployesComponent implements OnInit {
           icon: 'ni ni-support-16'
       });
       });
+
+      // var formData = new FormData();
+
+      // // Ajoutez les autres champs au FormData
+      // formData.append('nom', this.nom);
+      // formData.append('prenom', this.prenom);
+      // formData.append('email', this.email);
+      // formData.append('dateNaissance', date);
+      // formData.append('genre', this.genre);
+      // formData.append('motdepasse', this.password);
+      // formData.append('etat', "actif");
+      // formData.append('role', "2");
+
+      // if (this.image) {
+      //   formData.append('image', this.image);
+      // }
+
+      // console.log('formData: '+ formData);
+
+      // this.http.post(config.apiUrl + 'utilisateur/nouveauUtilisateur', formData)
+      // .subscribe((response: any) => {
+      //   if (response.type === 'success') {
+      //     this.alerts.unshift({
+      //       id: 0,
+      //       type: response.type,
+      //       strong: response.type + '! ',
+      //       message: response.messageErreur,
+      //       icon: 'ni ni-like-2'
+      //     });
+      //     this.getAllEmployees();
+      //     this.router.navigate(['/employes'], {
+      //       queryParams: {
+      //         successAjout: "Employé ajouté avec succès"
+      //       }
+      //     });
+      //   } else {
+      //     this.alerts.unshift({
+      //       id: 0,
+      //       type: response.type,
+      //       strong: response.type + '! ',
+      //       message: response.messageErreur,
+      //       icon: 'ni ni-support-16'
+      //     });
+      //   }
+
+      // }, error => {
+      //   console.error('Error uploading data', error);
+      //   this.alerts.unshift({
+      //     id: 0,
+      //     type: 'danger',
+      //     strong: 'Error!',
+      //     message: 'Un problème est survenu lors de l\'ajout d\'un employé. Réessayer plus tard.',
+      //     icon: 'ni ni-support-16'
+      // });
+      // });
 
       
     }
@@ -286,6 +324,7 @@ private getDismissReason(reason: any): string {
     console.log('prenomField:', this.prenomField);
     console.log('genreField:', this.genreField);
     console.log('emailField:', this.emailField);
+    console.log('passwordField:', this.passwordField);
     
     
     // console.log('type:', typeof this.dateNaissanceField);
@@ -300,53 +339,58 @@ private getDismissReason(reason: any): string {
 
     else {
       console.log('dateNaissanceField:', this.dateNaissanceField);
-      // var dataObject = {
-      //   nom: this.nomField,
-      //   prenom: this.prenomField,
-      //   email: this.emailField,
-      //   dateNaissance: this.dateNaissanceField,
-      //   genre: this.genreField,
-      //   motdepasse: "mdp",
-      //   etat: "actif",
-      //   role: 2
-      // };
+      var dataObject = {
+        nom: this.nomField,
+        prenom: this.prenomField,
+        email: this.emailField,
+        dateNaissance: this.dateNaissanceField,
+        genre: this.genreField,
+        motdepasse: this.passwordField,
+        etat: "actif",
+        role: 2
+      };
 
-      // var jsonData = JSON.stringify(dataObject);
-      // console.log('jsonData:' + jsonData);
+      var jsonData = JSON.stringify(dataObject);
+      console.log('jsonData:' + jsonData);
 
-      // this.http.put(config.apiUrl + 'utilisateur/modifierUtilisateur/'+ this.idEmploye, jsonData, { headers: { 'Content-Type': 'application/json' } })
-      //   .toPromise().then((res) => {
-      //     alert('Employe modifie');
-
-      // });
-
-      var formData = new FormData();
-
-      // Ajoutez les autres champs au FormData
-      formData.append('nom', this.nomField);
-      formData.append('prenom', this.prenomField);
-      formData.append('email', this.emailField);
-      formData.append('dateNaissance', this.dateNaissanceField);
-      formData.append('genre', this.genreField);
-      formData.append('motdepasse', "mdp");
-      formData.append('etat', "actif");
-      formData.append('role', "2");
-
-      if (this.imageField) {
-        formData.append('image', this.imageField);
-      }
-
-      console.log('formData: '+ formData);
-
-      this.http.put(config.apiUrl + 'utilisateur/modifierUtilisateur/'  + this.idEmploye , formData)
-      .subscribe((response: any) => {
-        console.log('Data uploaded successfully', response);
+      this.http.put(config.apiUrl + 'utilisateur/modifierUtilisateur/'+ this.idEmploye, jsonData, { headers: { 'Content-Type': 'application/json' } })
+        .toPromise().then((res) => {
+          console.log('Data uploaded successfully', res);
         alert('Employé modifié');
         this.getAllEmployees();
         this.estEnModeModification = false;
-      }, error => {
+
+      }).catch((error) => {
         console.error('Error uploading data', error);
       });
+
+      // var formData = new FormData();
+
+      // // Ajoutez les autres champs au FormData
+      // formData.append('nom', this.nomField);
+      // formData.append('prenom', this.prenomField);
+      // formData.append('email', this.emailField);
+      // formData.append('dateNaissance', this.dateNaissanceField);
+      // formData.append('genre', this.genreField);
+      // formData.append('motdepasse', "mdp");
+      // formData.append('etat', "actif");
+      // formData.append('role', "2");
+
+      // if (this.imageField) {
+      //   formData.append('image', this.imageField);
+      // }
+
+      // console.log('formData: '+ formData);
+
+      // this.http.put(config.apiUrl + 'utilisateur/modifierUtilisateur/'  + this.idEmploye , formData)
+      // .subscribe((response: any) => {
+      //   console.log('Data uploaded successfully', response);
+      //   alert('Employé modifié');
+      //   this.getAllEmployees();
+      //   this.estEnModeModification = false;
+      // }, error => {
+      //   console.error('Error uploading data', error);
+      // });
 
     }
   }

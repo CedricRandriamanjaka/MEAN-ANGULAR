@@ -74,6 +74,12 @@
                   (blur)="focus1=false">
               </div>
             </div>
+            <div class="form-group mb-4" [ngClass]="{'focused':focus11===true}">
+              <div class="input-group input-group-alternative">
+                <input class="form-control" placeholder="Mot de passe" type="text" [(ngModel)]="password" (focus)="focus11=true"
+                  (blur)="focus11=false">
+              </div>
+            </div>
             <div class="form-group mb-4" [ngClass]="{'focused':focus7===true}">
               <div class="input-group input-group-alternative">
                 <input class="form-control" placeholder="Email" type="email" [(ngModel)]="email" (focus)="focus7=true"
@@ -103,9 +109,9 @@
               </div>
             </div>
 
-            <c-alert color="danger" *ngIf="afficherAlerteDate">La date de début est postérieure à la date de fin.
+            <!-- <c-alert color="danger" *ngIf="afficherAlerteDate">La date de début est postérieure à la date de fin.
             </c-alert>
-            <c-alert color="danger" *ngIf="afficherAlerteChamp">Veuillez remplir tous les champs.</c-alert>
+            <c-alert color="danger" *ngIf="afficherAlerteChamp">Veuillez remplir tous les champs.</c-alert> -->
 
             <div>
               <button type="button" (click)="addEmploye()"
@@ -218,20 +224,30 @@
                 </ngx-file-drop>
               </div>
               <div class="form-group mb-3" [ngClass]="{'focused':focus2===true}">
+                <label for="nom">Nom</label>
                 <div class="input-group input-group-alternative">
-                  <input class="form-control" name="nom" [(ngModel)]="nomField" type="text" (focus)="focus2=true"
+                  <input class="form-control" id="nom" name="nom" [(ngModel)]="nomField" type="text" (focus)="focus2=true"
                     (blur)="focus2=false">
                 </div>
               </div>
               <div class="form-group mb-3" [ngClass]="{'focused':focus3===true}">
+                <label for="prenom">Prénom</label>
                 <div class="input-group input-group-alternative">
-                  <input class="form-control" name="prenom" [(ngModel)]="prenomField" type="text" (focus)="focus3=true"
+                  <input class="form-control" id="prenom" name="prenom" [(ngModel)]="prenomField" type="text" (focus)="focus3=true"
+                    (blur)="focus3=false">
+                </div>
+              </div>
+              <div class="form-group mb-3" [ngClass]="{'focused':focus3===true}">
+                <label for="mdp">Mot de passe</label>
+                <div class="input-group input-group-alternative">
+                  <input class="form-control" id="mdp" name="prenom" [(ngModel)]="passwordField" type="text" (focus)="focus3=true"
                     (blur)="focus3=false">
                 </div>
               </div>
               <div class="form-group mb-3" [ngClass]="{'focused':focus4===true}">
+                <label for="email">Email</label>
                 <div class="input-group input-group-alternative">
-                  <input class="form-control" type="email" name="email" [(ngModel)]="emailField" (focus)="focus4=true"
+                  <input class="form-control" id="email" type="email" name="email" [(ngModel)]="emailField" (focus)="focus4=true"
                     (blur)="focus4=false">
                 </div>
               </div>
