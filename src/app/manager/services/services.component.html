@@ -55,7 +55,7 @@
           <div class="card-body p-lg-5">
             <h4 class="mb-1">Ajouter un service</h4>
             <div class="form-group mb-mt-4">
-              <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="dropped($event)"
+              <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="handleImageUpload($event)"
                 (onFileOver)="fileOver($event)" (onFileLeave)="fileLeave($event)">
                 <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
                   <div class="mr-2">Déposer votre image ici</div>
@@ -83,7 +83,7 @@
             </div>
             <div class="form-group mb-4" [ngClass]="{ focused: focus10 === true }">
               <div class="input-group input-group-alternative">
-                <input class="form-control" placeholder="Durée (en heures)" type="text" [(ngModel)]="duree"
+                <input class="form-control" placeholder="Durée (en minutes)" type="text" [(ngModel)]="duree"
                   (focus)="focus10 = true" (blur)="focus10 = false" />
               </div>
             </div>
@@ -115,7 +115,7 @@
             </div>
             <div>
               <div class="mb-3">
-                <small class="text-uppercase font-weight-bold">Compétences requises :</small>
+                <small class="text-uppercase font-weight-bold">Compétences requises :  <button (click)="open1(classic1, 'modal_mini', 'sm')" type="button" class="btn btn-default mb-mt-4"><i class="ni ni-fat-add"></i></button></small>
               </div>
               <div class="row">
                 <div class="col-lg-4 col-sm-6 mt-4 mt-md-0" *ngFor="let competence of competences">
@@ -128,7 +128,7 @@
                   </div>
                 </div>
               </div>
-
+              
               <button type="button" (click)="addService()" class="btn btn-default btn-round btn-block btn-lg">
                 Ajouter
               </button>
@@ -182,7 +182,8 @@
                   Description: {{ service.description }}
                 </p>
 
-                <!-- <button (click)="open(classic1, 'modal_mini', 'sm', service)" class="btn btn-sm btn-outline-success">
+                <!-- <button (click)="open(
+                  , service)" class="btn btn-sm btn-outline-success">
                   Modifier
                 </button> -->
                 <button (click)="toggleModifier(service)" class="btn btn-sm btn-outline-success">
@@ -234,7 +235,7 @@
                 </ngx-file-drop>
               </div>
               <div class="form-group mb-3" [ngClass]="{ focused: focus7 === true }">
-                <label for="intitule">Date début</label>
+                <label for="date">Date début</label>
                 <div class="input-group input-group-alternative">
                   <input *ngIf="dateDebutField !== ''" class="form-control datepicker" [placeholder]="dateDebutField"
                     id="date" name="dp1" [(ngModel)]="dateDebutField" ngbDatepicker #d1="ngbDatepicker"
@@ -246,7 +247,7 @@
                 </div>
               </div>
               <div class="form-group mb-3" [ngClass]="{ focused: focus8 === true }">
-                <label for="intitule">Date fin</label>
+                <label for="date">Date fin</label>
                 <div class="input-group input-group-alternative">
                   <input *ngIf="dateDebutField !== ''" class="form-control datepicker" [placeholder]="dateFinField"
                     id="date" name="dp1" [(ngModel)]="dateFinField" ngbDatepicker #d1="ngbDatepicker"
@@ -280,7 +281,7 @@
                 </div>
               </div>
               <div class="form-group mb-3" [ngClass]="{ focused: focus5 === true }">
-                <label for="duree">Durée : en Heures</label>
+                <label for="duree">Durée : en Minutes</label>
                 <div class="input-group input-group-alternative">
                   <input class="form-control" id="duree" name="duree" type="text" [(ngModel)]="dureeField"
                     (focus)="focus5 = true" (blur)="focus5 = false" ngModel />
@@ -310,10 +311,11 @@
                   </div>
                 </div>
               </div>
+              
               <div *ngFor="let alert of alerts">
                 <c-alert [type]="alert.type" [strong]="alert.strong" [message]="alert.message" [icon]="alert.icon">
                 </c-alert>
-              </div>
+              </div> 
 
               <c-alert color="danger" *ngIf="afficherAlerteDate">La date de début est postérieure à la date de fin.
               </c-alert>
@@ -335,7 +337,7 @@
 
 
 <!-- Modal -->
-<div class="col-md-4">
+<!-- <div class="col-md-4">
   <ng-template #classic1 let-c="close" let-d="dismiss">
     <div class="modal-content">
       <div class="modal-body p-0">
@@ -407,6 +409,35 @@
 
               <div class="text-center">
                 <input type="submit" class="btn btn-primary my-4" value="Modifier" />
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+</div> -->
+
+<div class="col-md-4">
+  <ng-template #classic1 let-c="close" let-d="dismiss">
+    <div class="modal-content">
+      <div class="modal-body p-0">
+        <div class="card bg-secondary shadow border-0">
+          <div class="card-body px-lg-5 py-lg-5">
+            <div class="text-center text-muted mb-4">
+              <small>Ajouter une compétence</small>
+            </div>
+            <form>
+              <div class="form-group mb-3" [ngClass]="{ focused: focus14 === true }">
+                <label for="intitule">Nom de la Compétence</label>
+                <div class="input-group input-group-alternative">
+                  <input class="form-control" id="intitule" name="intitule" [(ngModel)]="nomCompetenceField" type="text" (focus)="focus14 = true"
+                    (blur)="focus14 = false" ngModel />
+                </div>
+              </div>
+
+              <div class="text-center">
+                <input type="submit" (click)="addCompetence()" class="btn btn-primary my-4" value="Ajouter" />
               </div>
             </form>
           </div>

@@ -1,6 +1,6 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { NgbDate } from '@ng-bootstrap/ng-bootstrap';
+import { NgbDate, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { IAlert } from '../../sections/alerts-section/alerts-section.component';
 import { config } from 'src/app/config/config';
@@ -51,6 +51,7 @@ export class ServicesComponent implements OnInit {
   focus11;
   focus12;
   focus13;
+  focus14;
   // model : NgbDate;
   model1: NgbDate;
 
@@ -71,6 +72,7 @@ export class ServicesComponent implements OnInit {
   prixField: string;
   dureeField: string;
   commissionField: string;
+  nomCompetenceField: string;
   imageField: any;
   competencesField: any = [];
 
@@ -78,9 +80,42 @@ export class ServicesComponent implements OnInit {
 
   @ViewChild('serviceForm') form: NgForm;
   @ViewChild('maSection', { static: false }) maSection!: ElementRef;
+  private modalRef: NgbModalRef;
 
 
   constructor(private http: HttpClient, private modalService: NgbModal, private router: Router, private route: ActivatedRoute) { }
+
+  // Fonction pour convertir une image en base64
+  convertToBase64(file: File): Promise<string | ArrayBuffer> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        resolve(reader.result);
+      };
+
+      reader.onerror = (error) => {
+        reject(error);
+      };
+
+      
+
+      // Lire le contenu de l'image en base64
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async handleImageUpload(event: any) {
+    const file: File = event.target.files[0];
+
+    console.log(file);
+    try {
+      const base64String = await this.convertToBase64(file);
+      console.log('Image en base64:', base64String);
+    } catch (error) {
+      console.error('Erreur lors de la conversion en base64:', error);
+    }
+  }
 
   toggleModifier(service) {
     this.estEnModeModification = true;
@@ -257,75 +292,49 @@ export class ServicesComponent implements OnInit {
       const competencesWithIdAndName = selectedCompetences.map(({ _id, nomCompetence }) => ({ _id, nomCompetence }));
       console.log('Compétences avec id et nomCompetence:', competencesWithIdAndName);
 
-      // var dataObject = {
-      //   nomService: this.intitule,
-      //   description: this.description,
-      //   prix: this.prix,
-      //   duree: this.duree,
-      //   commission: this.commission,
-      //   dateDebut: debut,
-      //   dateFin: fin,
-      //   image: this.image,
-      //   competences: selectedCompetences
-      // };
+      var dataObject = {
+        nomService: this.intitule,
+        description: this.description,
+        prix: this.prix,
+        duree: this.duree,
+        commission: this.commission,
+        dateDebut: debut,
+        dateFin: fin,
+        competences: JSON.stringify(selectedCompetences)
+      };
 
-      // var jsonData = JSON.stringify(dataObject);
-      // console.log('jsonData:' + jsonData);
+      var jsonData = JSON.stringify(dataObject);
+      console.log('jsonData:' + jsonData);
 
-      // this.http.post(config.apiUrl + 'services', jsonData, { headers: { 'Content-Type': 'application/json' } })
-      //   .toPromise().then((res) => {
-      //     alert('Service ajoutée');
-
-      //   });
-
-
-      var formData = new FormData();
-
-      // Ajoutez les autres champs au FormData
-      formData.append('nomService', this.intitule);
-      formData.append('description', this.description);
-      formData.append('prix', this.prix);
-      formData.append('duree', this.duree);
-      formData.append('commission', this.commission);
-      formData.append('dateDebut', debut);
-      formData.append('dateFin', fin);
-
-      if (this.image) {
-        formData.append('image', this.image);
-      }
-
-      // Ajoutez d'autres champs si nécessaire
-      formData.append('competences', JSON.stringify(competencesWithIdAndName));
-
-      console.log('formData: ' + formData);
-
-      this.http.post(config.apiUrl + 'services', formData)
-        .subscribe((response: any) => {
-          if (response.type === 'success') {
+      this.http.post(config.apiUrl + 'services', jsonData, { headers: { 'Content-Type': 'application/json' } })
+        .toPromise().then((res: any) => {
+          alert('Service ajoutée');
+          if (res.type === 'success') {
             this.alerts.unshift({
               id: 0,
-              type: response.type,
-              strong: response.type + '! ',
-              message: response.messageErreur,
+              type: res.type,
+              strong: res.type + '! ',
+              message: res.messageErreur,
               icon: 'ni ni-like-2'
             });
-            // this.getServices();
-            this.router.navigate(['/services'], {
-              queryParams: {
-                successAjout: "Service ajoutée avec succès"
-              }
-            });
+            this.getServices();
+            // this.router.navigate(['/services'], {
+            //   queryParams: {
+            //     successAjout: "Service ajoutée avec succès"
+            //   }
+            // });
           } else {
             this.alerts.unshift({
               id: 0,
-              type: response.type,
-              strong: response.type + '! ',
-              message: response.messageErreur,
+              type: res.type,
+              strong: res.type + '! ',
+              message: res.messageErreur,
               icon: 'ni ni-support-16'
             });
           }
 
-        }, error => {
+        }).catch ((error) => {
+          console.error('Erreur lors de la modification du service:', error);
           this.alerts.unshift({
             id: 0,
             type: 'danger',
@@ -333,8 +342,65 @@ export class ServicesComponent implements OnInit {
             message: 'Un problème est survenu lors de l\'ajout d\'un service. Réessayer plus tard.',
             icon: 'ni ni-support-16'
         });
-          console.error('Error adding data', error);
         });
+
+
+      // var formData = new FormData();
+
+      // // Ajoutez les autres champs au FormData
+      // formData.append('nomService', this.intitule);
+      // formData.append('description', this.description);
+      // formData.append('prix', this.prix);
+      // formData.append('duree', this.duree);
+      // formData.append('commission', this.commission);
+      // formData.append('dateDebut', debut);
+      // formData.append('dateFin', fin);
+
+      // if (this.image) {
+      //   formData.append('image', this.image);
+      // }
+
+      // // Ajoutez d'autres champs si nécessaire
+      // formData.append('competences', JSON.stringify(competencesWithIdAndName));
+
+      // console.log('formData: ' + formData);
+
+      // this.http.post(config.apiUrl + 'services', formData)
+      //   .subscribe((response: any) => {
+      //     if (response.type === 'success') {
+      //       this.alerts.unshift({
+      //         id: 0,
+      //         type: response.type,
+      //         strong: response.type + '! ',
+      //         message: response.messageErreur,
+      //         icon: 'ni ni-like-2'
+      //       });
+      //       // this.getServices();
+      //       this.router.navigate(['/services'], {
+      //         queryParams: {
+      //           successAjout: "Service ajoutée avec succès"
+      //         }
+      //       });
+      //     } else {
+      //       this.alerts.unshift({
+      //         id: 0,
+      //         type: response.type,
+      //         strong: response.type + '! ',
+      //         message: response.messageErreur,
+      //         icon: 'ni ni-support-16'
+      //       });
+      //     }
+
+      //   }, error => {
+      //     this.alerts.unshift({
+      //       id: 0,
+      //       type: 'danger',
+      //       strong: 'Error!',
+      //       message: 'Un problème est survenu lors de l\'ajout d\'un service. Réessayer plus tard.',
+      //       icon: 'ni ni-support-16'
+      //   });
+      //     console.error('Error adding data', error);
+      //   });
 
     }
     this.backup = this.alerts.map((alert: IAlert) => Object.assign({}, alert));
@@ -373,8 +439,70 @@ export class ServicesComponent implements OnInit {
       );
   }
 
-  open(content, type, modalDimension, service) {
-    console.log(service.nom)
+  // open(content, type, modalDimension, service) {
+  //   console.log(service.nom)
+  //   if (modalDimension === 'sm' && type === 'modal_mini') {
+  //     this.modalService.open(content, { windowClass: 'modal-mini', size: 'sm', centered: true }).result.then((result) => {
+  //       this.closeResult = `Closed with: ${result}`;
+  //     }, (reason) => {
+  //       this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
+  //     });
+  //   } else if (modalDimension === '' && type === 'Notification') {
+  //     this.modalService.open(content, { windowClass: 'modal-danger', centered: true }).result.then((result) => {
+  //       this.closeResult = `Closed with: ${result}`;
+  //     }, (reason) => {
+  //       this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
+  //     });
+  //   } else {
+  //     this.modalService.open(content, { centered: true }).result.then((result) => {
+  //       this.closeResult = `Closed with: ${result}`;
+  //     }, (reason) => {
+  //       this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
+  //     });
+
+  //   }
+
+  //   // console.log('service.dateDebutField : ', service.dateDebutField);
+
+  //   this.idService = service._id;
+  //   this.intituleField = service.nom;
+  //   this.descriptionField = service.description;
+  //   this.prixField = service.prix;
+  //   this.dureeField = service.duree;
+  //   this.commissionField = service.commission;
+  //   if (service.dateDebut !== null && service.dateFin !== null) {
+  //     this.dateDebutField = service.dateDebut.split("T")[0];
+  //     this.dateFinField = service.dateFin.split("T")[0];
+  //   }
+
+  //   this.competencesField = service.competences;
+
+  //   console.log('Intitule : ', this.intituleField);
+  //   console.log('Description : ', this.descriptionField);
+  //   console.log('Prix : ', this.prixField);
+  //   console.log('Durée : ', this.dureeField);
+  //   console.log('Commision : ', this.commissionField);
+  //   console.log('Date Debut : ', this.dateDebutField);
+  //   console.log('Date Fin : ', this.dateFinField);
+  //   console.log('Competences : ', this.competencesField);
+
+  //   // if(this.form) {
+  //   //   this.form.setValue({
+  //   //     intitule: this.intituleField,  
+  //   //     description: this.descriptionField, 
+  //   //     prix: this.prixField,  
+  //   //     duree: this.dureeField, 
+  //   //     commission: this.commissionField, 
+  //   //     dateDebut: this.dateDebutField,  
+  //   //     dateFin: this.dateFinField
+  //   //   });
+  //   // }
+
+  //   // console.log('this.form'+' : ', this.form);
+
+  // }
+
+  open1(content, type, modalDimension) {
     if (modalDimension === 'sm' && type === 'modal_mini') {
       this.modalService.open(content, { windowClass: 'modal-mini', size: 'sm', centered: true }).result.then((result) => {
         this.closeResult = `Closed with: ${result}`;
@@ -396,44 +524,31 @@ export class ServicesComponent implements OnInit {
 
     }
 
-    // console.log('service.dateDebutField : ', service.dateDebutField);
+  }
 
-    this.idService = service._id;
-    this.intituleField = service.nom;
-    this.descriptionField = service.description;
-    this.prixField = service.prix;
-    this.dureeField = service.duree;
-    this.commissionField = service.commission;
-    if (service.dateDebut !== null && service.dateFin !== null) {
-      this.dateDebutField = service.dateDebut.split("T")[0];
-      this.dateFinField = service.dateFin.split("T")[0];
+  close(): void {
+    if (this.modalRef) {
+      this.modalRef.close();
     }
+  }
 
-    this.competencesField = service.competences;
+  addCompetence() {
+    var dataObject = {
+      nomCompetence: this.nomCompetenceField
+    };
 
-    console.log('Intitule : ', this.intituleField);
-    console.log('Description : ', this.descriptionField);
-    console.log('Prix : ', this.prixField);
-    console.log('Durée : ', this.dureeField);
-    console.log('Commision : ', this.commissionField);
-    console.log('Date Debut : ', this.dateDebutField);
-    console.log('Date Fin : ', this.dateFinField);
-    console.log('Competences : ', this.competencesField);
+    var jsonData = JSON.stringify(dataObject);
+    console.log('jsonData:' + jsonData);
+    this.http.post(config.apiUrl + 'competences', jsonData, { headers: { 'Content-Type': 'application/json' } })
+    .toPromise().then((res: any) => {
+      alert('Compétences ajoutées avec succès');
+      this.getServices();
+      this.getCompetences();
+      this.modalRef.close();
 
-    // if(this.form) {
-    //   this.form.setValue({
-    //     intitule: this.intituleField,  
-    //     description: this.descriptionField, 
-    //     prix: this.prixField,  
-    //     duree: this.dureeField, 
-    //     commission: this.commissionField, 
-    //     dateDebut: this.dateDebutField,  
-    //     dateFin: this.dateFinField
-    //   });
-    // }
-
-    // console.log('this.form'+' : ', this.form);
-
+    }), error => {
+      alert('Erreur lors de l\'ajout de la compétence');
+    };
   }
 
   private getDismissReason(reason: any): string {
@@ -472,60 +587,63 @@ export class ServicesComponent implements OnInit {
       console.log('dateFinField:', this.dateFinField);
       console.log('Competences:', this.competencesField);
 
-      //   var dataObject = {
-      //     nomService: this.intituleField,
-      //     description: this.descriptionField,
-      //     prix: this.prixField,
-      //     duree: this.dureeField,
-      //     commission: this.commissionField,
-      //     dateDebut: this.dateDebutField,
-      //     dateFin: this.dateFinField,
-      //     competences: this.competencesField
-      //   };
+        var dataObject = {
+          nomService: this.intituleField,
+          description: this.descriptionField,
+          prix: this.prixField,
+          duree: this.dureeField,
+          commission: this.commissionField,
+          dateDebut: this.dateDebutField,
+          dateFin: this.dateFinField,
+          competences: JSON.stringify(this.competencesField)
+        };
 
-      // var jsonData = JSON.stringify(dataObject);
-      // console.log('jsonData:' + jsonData);
+      var jsonData = JSON.stringify(dataObject);
+      console.log('jsonData:' + jsonData);
 
-      // this.http.put(config.apiUrl + 'services/'+ this.idService, jsonData, { headers: { 'Content-Type': 'application/json' } })
-      //   .toPromise().then((res) => {
-      //     alert('Service modifie');
-
-      // });
-
-
-      var formData = new FormData();
-
-      // Ajoutez les autres champs au FormData
-      formData.append('nomService', this.intituleField);
-      formData.append('description', this.descriptionField);
-      formData.append('prix', this.prixField);
-      formData.append('duree', this.dureeField);
-      formData.append('commission', this.commissionField);
-      formData.append('dateDebut', this.dateDebutField);
-      formData.append('dateFin', this.dateFinField);
-
-      if (this.imageField) {
-        formData.append('image', this.imageField);
-      }
-
-      const selectedCompetences = this.competencesField.filter(comp => comp.isChecked);
-      console.log('Compétences sélectionnées:', selectedCompetences);
-      // Ajoutez d'autres champs si nécessaire
-      formData.append('competences', JSON.stringify(selectedCompetences));
-
-      console.log('formData: ' + formData);
-
-      this.http.put(config.apiUrl + 'services/' + this.idService, formData)
-        .subscribe((response: any) => {
-          console.log('Data uploaded successfully', response);
-          alert('Service modifiée');
+      this.http.put(config.apiUrl + 'services/'+ this.idService, jsonData, { headers: { 'Content-Type': 'application/json' } })
+        .toPromise().then((res) => {
+          console.log('Data uploaded successfully', res);
+          alert('Service modifie');
           this.getServices();
           this.estEnModeModification = false;
-        }, error => {
-          console.error('Error uploading data', error);
-        });
 
-        
+      }).catch ((error) => {
+        console.error('Erreur lors de la modification du service:', error);
+      });
+
+
+      // var formData = new FormData();
+
+      // // Ajoutez les autres champs au FormData
+      // formData.append('nomService', this.intituleField);
+      // formData.append('description', this.descriptionField);
+      // formData.append('prix', this.prixField);
+      // formData.append('duree', this.dureeField);
+      // formData.append('commission', this.commissionField);
+      // formData.append('dateDebut', this.dateDebutField);
+      // formData.append('dateFin', this.dateFinField);
+
+      // if (this.imageField) {
+      //   formData.append('image', this.imageField);
+      // }
+
+      // const selectedCompetences = this.competencesField.filter(comp => comp.isChecked);
+      // console.log('Compétences sélectionnées:', selectedCompetences);
+      // // Ajoutez d'autres champs si nécessaire
+      // formData.append('competences', JSON.stringify(selectedCompetences));
+
+      // console.log('formData: ' + formData);
+
+      // this.http.put(config.apiUrl + 'services/' + this.idService, formData)
+      //   .subscribe((response: any) => {
+      //     console.log('Data uploaded successfully', response);
+      //     alert('Service modifiée');
+      //     this.getServices();
+      //     this.estEnModeModification = false;
+      //   }, error => {
+      //     console.error('Error uploading data', error);
+      //   });
 
     }
   }
