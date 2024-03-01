@@ -5,7 +5,7 @@
 
 <div class="alert-container">
   <div *ngFor="let alert of alerts">
-    <ngb-alert [type]="alert.type" [dismissible]="true" (close)="close(alert)">
+    <ngb-alert [type]="alert.type" [dismissible]="true" (close)="closeAlert(alert)">
       <ng-container *ngIf="alert.icon">
         <div class="alert-inner--icon">
           <i class="{{alert.icon}}"></i>
@@ -225,7 +225,7 @@
             </div>
             <form #serviceForm="ngForm" (ngSubmit)="updateService()">
               <div class="form-group mb-3">
-                <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="droppedUpdate($event, image)"
+                <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="droppedUpdate($event)"
                   (onFileOver)="fileOver($event)" (onFileLeave)="fileLeave($event)">
                   <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
                     <div class="mr-1">Déposer votre image ici</div>
@@ -312,7 +312,7 @@
                 </div>
               </div>
               
-              <div *ngFor="let alert of alerts">
+              <!-- <div *ngFor="let alert of alerts">
                 <c-alert [type]="alert.type" [strong]="alert.strong" [message]="alert.message" [icon]="alert.icon">
                 </c-alert>
               </div> 
@@ -320,7 +320,7 @@
               <c-alert color="danger" *ngIf="afficherAlerteDate">La date de début est postérieure à la date de fin.
               </c-alert>
               <c-alert color="danger" *ngIf="afficherAlerteChamp">Veuillez remplir tous les champs.</c-alert>
-              <c-alert color="danger" *ngIf="afficherAlerteNumber">Numberrr.</c-alert>
+              <c-alert color="danger" *ngIf="afficherAlerteNumber">Numberrr.</c-alert> -->
 
 
               <div class="text-center">

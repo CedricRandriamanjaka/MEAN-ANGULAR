@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule } from '@angular/common/http'; // Importer le module HttpClientModule
+import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -8,20 +8,15 @@ import { AppRoutingModule } from './app.routing';
 
 import { AppComponent } from './app.component';
 import { SignupComponent } from './signup/signup.component';
-import { detail } from './detail-service/landing.component';
-import { ProfileUtilisateur } from './profile-utilisateur/profile.component';
-import { HomeEmploye } from './home-employe/landing.component';
+import { detail } from './detail-service/landing.component'; // Correction ici
+import { ProfileUtilisateur } from './profile-utilisateur/profile.component'; // Correction ici
+import { HomeEmploye } from './home-employe/landing.component'; // Correction ici
 import { NavbarComponent } from './shared/navbar/navbar.component';
-import { LandingComponent } from './landing/landing.component';
-import { ProfileComponent } from './profile/profile.component';
-import { HomeComponent } from './home/home.component';
 import { FooterComponent } from './shared/footer/footer.component';
 import { FullCalendarModule } from '@fullcalendar/angular';
-
-import { HomeModuleClient } from './home-utilisateur/home.module';
 import { LoginComponent } from './login/login.component';
+import { HomeModuleClient } from './home-utilisateur/home.module';
 import { HomeManagerModule } from './manager/home-manager/home-manager.module';
-
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CommonModule, DatePipe } from '@angular/common';
 
@@ -29,12 +24,10 @@ import { CommonModule, DatePipe } from '@angular/common';
   declarations: [
     AppComponent,
     SignupComponent,
-    HomeEmploye,
-    detail,
-    ProfileUtilisateur,
+    detail, // Correction ici
+    ProfileUtilisateur, // Correction ici
+    HomeEmploye, // Correction ici
     NavbarComponent,
-    LandingComponent,
-    ProfileComponent,
     FooterComponent,
     LoginComponent,
   ],
@@ -42,7 +35,7 @@ import { CommonModule, DatePipe } from '@angular/common';
     CommonModule,
     BrowserModule,
     NgbModule,
-    HttpClientModule, // Ajouter HttpClientModule ici
+    HttpClientModule,
     FormsModule,
     RouterModule,
     AppRoutingModule,
@@ -52,7 +45,6 @@ import { CommonModule, DatePipe } from '@angular/common';
   ],
   providers: [
     DatePipe,
-    HomeModule,
     HomeManagerModule
   ],
   bootstrap: [AppComponent]

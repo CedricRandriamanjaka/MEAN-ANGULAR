@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, NavigationEnd, NavigationStart } from '@angular/router';
 import { Location, PopStateEvent } from '@angular/common';
+import { CookieService } from 'ngx-cookie-service';
+import { AuthService } from './auth.service';
 
 @Component({
   selector: 'app-navbar-manager',
@@ -13,7 +15,8 @@ export class NavbarManagerComponent implements OnInit {
     private lastPoppedUrl: string;
     private yScrollStack: number[] = [];
 
-    constructor(public location: Location, private router: Router) {
+
+    constructor(public location: Location,private cookieService: CookieService, private router: Router,private authService: AuthService) {
     }
 
     ngOnInit() {
@@ -54,5 +57,9 @@ export class NavbarManagerComponent implements OnInit {
             return false;
         }
     }
+
+    logout(): void {
+        this.authService.logout();
+      }
 
 }

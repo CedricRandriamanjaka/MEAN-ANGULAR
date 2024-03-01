@@ -532,6 +532,11 @@ export class ServicesComponent implements OnInit {
     }
   }
 
+  // Fonction pour fermer une alerte
+closeAlert(alert: IAlert) {
+  this.alerts.splice(this.alerts.indexOf(alert), 0);
+}
+
   addCompetence() {
     var dataObject = {
       nomCompetence: this.nomCompetenceField

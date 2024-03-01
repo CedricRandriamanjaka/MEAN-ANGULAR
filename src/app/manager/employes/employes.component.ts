@@ -498,5 +498,8 @@ private getDismissReason(reason: any): string {
       }
     });
   }
-
+// Fonction pour fermer une alerte
+close(alert: IAlert) {
+  this.alerts.splice(this.alerts.indexOf(alert), 0);
+}
 }

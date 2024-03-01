@@ -184,5 +184,8 @@ export class DepensesComponent implements OnInit {
     // console.log(this.years)
     
   }
-
+// Fonction pour fermer une alerte
+close(alert: IAlert) {
+  this.alerts.splice(this.alerts.indexOf(alert), 0);
+}
 }

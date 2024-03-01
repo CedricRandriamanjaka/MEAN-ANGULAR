@@ -59,7 +59,7 @@ export class LoginComponent implements OnInit {
               this.router.navigate(['/home-employe']);
             }
             else if (response.role === 3) {
-              this.router.navigate(['/home']);
+              this.router.navigate(['/manager']);
             } else {
               this.alerts.unshift({
                 id: 0,

@@ -49,11 +49,11 @@ const routes: Routes = [
   { path: 'register', component: SignupComponent },
   { path: 'detail/:id', component: detail, canActivate: [AuthGuard] }, // Restreignez l'accès au détail
   { path: 'login', component: LoginComponent },
-  { path: 'manager', component: HomeManagerComponent },
-  { path: 'services', component: ServicesComponent },
-  { path: 'employes', component: EmployesComponent },
-  { path: 'depenses', component: DepensesComponent },
-  { path: 'horaire/:employeId', component: HoraireEmployeComponent },
+  { path: 'manager', component: HomeManagerComponent , canActivate: [AuthGuard]  },
+  { path: 'services', component: ServicesComponent , canActivate: [AuthGuard]  },
+  { path: 'employes', component: EmployesComponent , canActivate: [AuthGuard]  },
+  { path: 'depenses', component: DepensesComponent , canActivate: [AuthGuard]  },
+  { path: 'horaire/:employeId', component: HoraireEmployeComponent , canActivate: [AuthGuard]  },
   { path: '', redirectTo: 'home-client', pathMatch: 'full' }
 ];
 

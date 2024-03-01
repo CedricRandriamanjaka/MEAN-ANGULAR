@@ -214,7 +214,7 @@
             </div>
             <form role="form" #employeForm="ngForm" (ngSubmit)="updateEmployee()">
               <div class="form-group mb-3">
-                <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="droppedUpdate($event, image)"
+                <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="droppedUpdate($event)"
                   (onFileOver)="fileOver($event)" (onFileLeave)="fileLeave($event)">
                   <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
                     <div class="mr-1">Déposer votre image ici</div>
@@ -318,7 +318,7 @@
                 <div class="input-group-prepend">
                   <span class="input-group-text"><i class="ni ni-single-02"></i></span>
                 </div>
-                <select class="form-control" [placeholder]="genreField" [(ngModel)]="genreField">
+                <select class="form-control" [(ngModel)]="genreField">
                   <option value="1">Masculin</option>
                   <option value="2">Féminin</option>
                   <option value="3">Autre</option>
