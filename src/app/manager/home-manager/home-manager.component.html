@@ -6,13 +6,63 @@
 <br>
 <br>
 <div class="container mt-4">
-    <div class="row">
-        <div class="col-lg-6">
-          <canvas id="pieChart"></canvas>
+  <div class="row justify-content-center">
+    <div class="col-lg-12">
+      <div class="row mb-mt-4">
+        <div class="col-lg-4 col-sm-4 form-group">
+          <div class="input-group input-group-alternative mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text">Mois</span>
+            </div>
+
+            <select class="form-control" placeholder="Mois" [(ngModel)]="mois">
+              <option value="0">Pas de mois spécifique</option>
+              <option *ngFor="let month of months" [value]="month.value">{{ month.label }}</option>
+            </select>
+          </div>
         </div>
-        <div class="col-lg-6">
-          <canvas id="barChart"></canvas>
+        <div class="col-lg-4 col-sm-4 form-group">
+          <div class="input-group input-group-alternative mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text">Année</span>
+            </div>
+
+            <select class="form-control" placeholder="Année" [(ngModel)]="annee">
+              <option value="" disabled selected>Année</option>
+              <option *ngFor="let year of years" [value]="year">{{ year }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-sm-4 form-group">
+          <button class="btn btn-1 btn-primary btn-block" (click)="filtreChiffreAffaire(mois, annee)"
+            type="button">Filtrer</button>
         </div>
       </div>
+    </div>
+    <div class="col-lg-12 m-4">
+      <div class="row">
+        <h2>Chiffres d'affaire par jour et par mois</h2>
+        <canvas #chiffreAffaireChart id="chiffreAffaireChart"></canvas>
+      </div>
+    </div>
+    <div class="col-lg-12 m-4">
+      <div class="row">
+        <h2>Dépense par mois</h2>
+        <canvas #depenseParMoisChart id="depenseParMoisChart"></canvas>
+      </div>
+    </div>
+    <div class="col-lg-12 m-4">
+      <div class="row">
+        <h2>Bénéfice par mois</h2>
+        <canvas #beneficeParMoisChart id="beneficeParMoisChart"></canvas>
+      </div>
+    </div>
+    <div class="col-lg-12 m-4">
+      <div class="row">
+        <h2>Nombre de réservation par jour et par mois</h2>
+        <canvas #NbReservationChart id="NbReservationChart"></canvas>
+      </div>
+    </div>
+  </div>
 </div>
-
