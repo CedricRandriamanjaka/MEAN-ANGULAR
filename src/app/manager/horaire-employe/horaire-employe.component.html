@@ -74,14 +74,14 @@
 <div class="container pt-lg pb-300">
   <div class="row text-center justify-content-center">
     <div class="col-lg-10">
-      <h2 class="display-3">Horaire de travail de l'employé {{employees.nom}}</h2>
+      <h2 class="display-3">Horaire de travail de l'employé</h2>
       <h2 class="display-3">{{employees.nom}} {{employees.prenom}}</h2>
     </div>
   </div>
   <div class="row row-grid mt-5">
     <div class="col-lg-4" *ngFor="let horaire of horaires; let i=index">
       <div class="icon icon-lg icon-shape bg-gradient-black shadow rounded-circle text-primary">
-        <i class="ni ni-settings text-primary"></i>
+        <i class="fa fa-clock-o text-primary"></i>
       </div>
       <h5 class="text-black mt-3">{{horaire.jour}}</h5>
       <p class="text-black mt-3">Heure Début: {{horaire.heureDebut}}</p>

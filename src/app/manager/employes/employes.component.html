@@ -154,12 +154,12 @@
     <div class="row">
       <div class="col-md-6 col-lg-4 mb-4" *ngFor="let employe of employees | filter:searchText; let i = index;">
         <div class="px-4">
-          <img *ngIf="employe.image !=='' && employe.image !== null; else noImage" [src]="urlImage + employe.image"
+          <!-- <img *ngIf="employe.image !=='' && employe.image !== null; else noImage" [src]="urlImage + employe.image"
             class="img-center img-fluid shadow shadow-lg--hover" style="width: 200px" alt="Description de l'image" />
-          <ng-template #noImage>
+          <ng-template #noImage> -->
             <img src="./assets/img/theme/team-1-800x800.jpg" class="img-center img-fluid shadow shadow-lg--hover"
               style="width: 200px" />
-          </ng-template>
+          <!-- </ng-template> -->
           <div class="pt-4 text-center">
             <h5 class="title">
               <span class="d-block mb-1">{{employe.nom}} {{employe.prenom}}</span>
@@ -169,17 +169,17 @@
             <div class="mt-3">
               <button ngbButton type="button" placement="bottom" class="btn btn-primary btn-tooltip"
                 ngbTooltip="Modifier" (click)="toggleModifier(employe)">
-                <span class="nav-link-icon d-block"><i class="ni ni-atom"></i></span>
+                <span class="nav-link-icon d-block"><i class="fa fa-edit"></i></span>
               </button>
 
               <button ngbButton type="button" placement="bottom" class="btn btn-warning btn-tooltip"
                 ngbTooltip="Supprimer" (click)="deleteEmployee(employe._id)">
-                <span class="nav-link-icon d-block"><i class="ni ni-chat-round"></i></span>
+                <span class="nav-link-icon d-block"><i class="fa fa-trash-o"></i></span>
               </button>
 
               <button ngbButton type="button" placement="bottom" class="btn btn-primary btn-tooltip"
                 ngbTooltip="Modifier l'horaire de travail" (click)="redirectHoraireEmploye(employe)">
-                <span class="nav-link-icon d-block"><i class="ni ni-cloud-download-95"></i></span>
+                <span class="nav-link-icon d-block"><i class="fa fa-clock-o"></i></span>
               </button>
 
             </div>
