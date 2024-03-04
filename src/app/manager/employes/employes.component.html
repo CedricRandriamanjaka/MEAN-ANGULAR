@@ -3,7 +3,7 @@
 
 <div class="alert-container">
   <div *ngFor="let alert of alerts">
-    <ngb-alert [type]="alert.type" [dismissible]="true" (close)="close(alert)">
+    <ngb-alert [type]="alert.type" [dismissible]="true" (close)="closeAlert(alert)">
       <ng-container *ngIf="alert.icon">
         <div class="alert-inner--icon">
           <i class="{{alert.icon}}"></i>
@@ -151,6 +151,12 @@
         </div>
       </div>
     </div>
+    <div class="row justify-content-center">
+      <div *ngIf="isLoadingEmploye">
+        <!-- Ajoutez ici le code HTML ou le composant de votre icône de chargement -->
+        <i class="fa fa-spinner fa-spin"></i> Chargement des données 
+      </div>
+    </div>
     <div class="row">
       <div class="col-md-6 col-lg-4 mb-4" *ngFor="let employe of employees | filter:searchText; let i = index;">
         <div class="px-4">
@@ -163,8 +169,9 @@
           <div class="pt-4 text-center">
             <h5 class="title">
               <span class="d-block mb-1">{{employe.nom}} {{employe.prenom}}</span>
-              <p><small class="h6 text-muted">{{employe.email}}</small></p>
-              <p><small class="h6 text-muted">{{employe.dateNaissance}}</small></p>
+              <p><small class="h6 text-muted">Email: {{employe.email}}</small></p>
+              <p><small class="h6 text-muted">Date de naissance: {{employe.dateNaissance | date:'yyyy-MM-dd'}}</small></p>
+
             </h5>
             <div class="mt-3">
               <button ngbButton type="button" placement="bottom" class="btn btn-primary btn-tooltip"

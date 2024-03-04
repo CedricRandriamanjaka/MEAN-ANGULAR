@@ -62,6 +62,8 @@ export class EmployesComponent implements OnInit {
   passwordField: string;
   imageField: any;
 
+  isLoadingEmploye: boolean = true;
+
   @ViewChild('employeForm') form: NgForm;
   @ViewChild('maSection', {static: false}) maSection!: ElementRef;
   estEnModeModification: boolean = false;
@@ -156,29 +158,22 @@ export class EmployesComponent implements OnInit {
 
       this.http.post(config.apiUrl + 'utilisateur/nouveauUtilisateur', jsonData, { headers: { 'Content-Type': 'application/json' } })
         .toPromise().then((res: any) => {
-          if (res.type === 'success') {
+          console.log('res: '+JSON.stringify(res));
+            this.clearFormEmploye();
+            this.getAllEmployees();
             this.alerts.unshift({
               id: 0,
-              type: res.type,
-              strong: res.type + '! ',
-              message: res.messageErreur,
+              type: 'success',
+              strong: 'Success! ',
+              message: 'Employé ajouté avec succès',
               icon: 'ni ni-like-2'
             });
-            this.getAllEmployees();
             // this.router.navigate(['/employes'], {
             //   queryParams: {
             //     successAjout: "Employé ajouté avec succès"
             //   }
             // });
-          } else {
-            this.alerts.unshift({
-              id: 0,
-              type: res.type,
-              strong: res.type + '! ',
-              message: res.messageErreur,
-              icon: 'ni ni-support-16'
-            });
-          }
+          
 
       }).catch((error) => {
         console.error('Error uploading data', error);
@@ -253,6 +248,21 @@ export class EmployesComponent implements OnInit {
 
   }
 
+  closeAlert(alert: IAlert) {
+    this.alerts.splice(this.alerts.indexOf(alert), 0);
+  }
+
+  clearFormEmploye() {
+    // Réinitialiser les valeurs des champs du formulaire
+    this.nom = '';
+    this.prenom = '';
+    this.password = '';
+    this.email = '';
+    this.genre = '';
+    this.date = null; // Réinitialiser la date de naissance
+
+  }
+
   open(content, type, modalDimension, employe) {
     console.log(employe.nom)
     if (modalDimension === 'sm' && type === 'modal_mini') {
@@ -304,18 +314,20 @@ private getDismissReason(reason: any): string {
 
 
   getAllEmployees() {
-    this.http.get(config.apiUrl + 'utilisateur/byRole/2')
-      .subscribe(
+    this.http.get(config.apiUrl + 'utilisateur/byRole/2').toPromise()
+      .then(
         (data) => {
           console.log('Data:', data);
           // console.log('Date:', this.datePipe.transform(data[0].dateNaissance), 'yyyy-MM-dd');
           this.employees = data;
 
-        },
-        (error) => {
-          console.error('Error:', error);
         }
-      );
+      ).catch((error) => {
+        console.error('Error:', error);
+      })
+      .then(() => {
+        this.isLoadingEmploye = false;
+      });
   }
 
   updateEmployee() {
@@ -356,13 +368,23 @@ private getDismissReason(reason: any): string {
       this.http.put(config.apiUrl + 'utilisateur/modifierUtilisateur/'+ this.idEmploye, jsonData, { headers: { 'Content-Type': 'application/json' } })
         .toPromise().then((res) => {
           console.log('Data uploaded successfully', res);
-        alert('Employé modifié');
-        this.getAllEmployees();
-        this.estEnModeModification = false;
+          // alert('Employé modifié');
+
+          this.getAllEmployees();
+          this.alerts.unshift({
+            id: 0,
+            type: 'success',
+            strong: 'Success! ',
+            message: 'Employé modifié avec succès',
+            icon: 'ni ni-like-2'
+          });
+          this.estEnModeModification = false;
 
       }).catch((error) => {
         console.error('Error uploading data', error);
       });
+
+      this.backup = this.alerts.map((alert: IAlert) => Object.assign({}, alert));
 
       // var formData = new FormData();
 
@@ -477,10 +499,18 @@ private getDismissReason(reason: any): string {
 
     this.http.delete(config.apiUrl + 'utilisateur/supprimerUtilisateur/'+ employeId)
     .toPromise().then((res) => {
-      
+      this.alerts.unshift({
+        id: 0,
+        type: 'success',
+        strong: 'Success! ',
+        message: 'Employé supprimé avec succès',
+        icon: 'ni ni-like-2'
+      });
       this.getAllEmployees();
-      alert('L\'employé a bien été supprimé');
+      // alert('L\'employé a bien été supprimé');
     });
+
+    this.backup = this.alerts.map((alert: IAlert) => Object.assign({}, alert));
   }
 
   ngOnInit() {

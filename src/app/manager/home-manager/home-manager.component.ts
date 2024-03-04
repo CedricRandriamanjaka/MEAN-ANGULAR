@@ -31,6 +31,11 @@ export class HomeManagerComponent implements OnInit, OnDestroy {
   currentYear = new Date().getFullYear();
   startYear = 2010;
 
+  isLoadingChiffreAffaire: boolean = true;
+  isLoadingDepense: boolean = true;
+  isLoadingBenefice: boolean = true;
+  isLoadingReservation: boolean = true;
+
   public years = Array.from({ length: this.currentYear - this.startYear + 1 }, (_, index) => (this.startYear + index).toString());
 
   public months = [
@@ -198,7 +203,7 @@ export class HomeManagerComponent implements OnInit, OnDestroy {
 
     console.log('labelsD : ', labels);
     console.log('totalsD : ', totals);
-    new Chart(this.depenseParMoisChartCanvas.nativeElement, {
+    this.depenseParMoisChart = new Chart(this.depenseParMoisChartCanvas.nativeElement, {
       type: 'bar',
       data: {
         labels: labels,
@@ -389,7 +394,7 @@ export class HomeManagerComponent implements OnInit, OnDestroy {
       data: {
         labels: labels,
         datasets: [{
-          label: 'Total Depense',
+          label: 'Nombre de réservations',
           data: totals,
           borderWidth: 1,
           backgroundColor: colors,
@@ -410,21 +415,53 @@ export class HomeManagerComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     console.log("Home Manager");
-    this.getChiffreAffaire().then(() => {
-      this.renderChiffreAffaireChart();
+    this.getChiffreAffaire().then(
+      () => {
+        this.renderChiffreAffaireChart();
+      },
+      () => {
+        // Handle rejection if needed
+        console.log("Error");
+      }
+    ).then(() => {
+      this.isLoadingChiffreAffaire = false;
     });
     
-    this.getDepenseParMois().then(() => {
-      console.log("Après getDepenseParMois");
-      this.renderDepenseParMois();
+    this.getDepenseParMois().then(
+      () => {
+        console.log("Après getDepenseParMois");
+        this.renderDepenseParMois();
+      },
+      () => {
+        // Handle rejection if needed
+        console.log("Error");
+      }
+    ).then(() => {
+      this.isLoadingDepense = false;
     });
-
-    this.getBeneficeParMois().then(() => {
-      this.renderBeneficeParMoisChart();
+  
+    this.getBeneficeParMois().then(
+      () => {
+        this.renderBeneficeParMoisChart();
+      },
+      () => {
+        // Handle rejection if needed
+        console.log("Error");
+      }
+    ).then(() => {
+      this.isLoadingBenefice = false;
     });
-
-    this.getNbReservation().then(() => {
-      this.renderNbReservationChart();
+  
+    this.getNbReservation().then(
+      () => {
+        this.renderNbReservationChart();
+      },
+      () => {
+        // Handle rejection if needed
+        console.log("Error");
+      }
+    ).then(() => {
+      this.isLoadingReservation = false;
     });
     
   }

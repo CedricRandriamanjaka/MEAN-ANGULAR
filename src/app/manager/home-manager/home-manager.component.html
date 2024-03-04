@@ -44,24 +44,40 @@
       <div class="row">
         <h2>Chiffres d'affaire par jour et par mois</h2>
         <canvas #chiffreAffaireChart id="chiffreAffaireChart"></canvas>
+        <div *ngIf="isLoadingChiffreAffaire">
+          <!-- Ajoutez ici le code HTML ou le composant de votre icône de chargement -->
+          <i class="fa fa-spinner fa-spin"></i> Chargement des données 
+        </div>
       </div>
     </div>
     <div class="col-lg-12 m-4">
       <div class="row">
         <h2>Dépense par mois</h2>
         <canvas #depenseParMoisChart id="depenseParMoisChart"></canvas>
+        <div *ngIf="isLoadingDepense">
+          <!-- Ajoutez ici le code HTML ou le composant de votre icône de chargement -->
+          <i class="fa fa-spinner fa-spin"></i> Chargement des données 
+        </div>
       </div>
     </div>
     <div class="col-lg-12 m-4">
       <div class="row">
         <h2>Bénéfice par mois</h2>
         <canvas #beneficeParMoisChart id="beneficeParMoisChart"></canvas>
+        <div *ngIf="isLoadingBenefice">
+          <!-- Ajoutez ici le code HTML ou le composant de votre icône de chargement -->
+          <i class="fa fa-spinner fa-spin"></i> Chargement des données 
+        </div>
       </div>
     </div>
     <div class="col-lg-12 m-4">
       <div class="row">
         <h2>Nombre de réservation par jour et par mois</h2>
-        <canvas #NbReservationChart id="NbReservationChart"></canvas>
+        <canvas #nbReservationChart id="nbReservationChart"></canvas>
+        <div *ngIf="isLoadingReservation">
+          <!-- Ajoutez ici le code HTML ou le composant de votre icône de chargement -->
+          <i class="fa fa-spinner fa-spin"></i> Chargement des données 
+        </div>
       </div>
     </div>
   </div>

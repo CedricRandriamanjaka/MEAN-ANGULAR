@@ -1,5 +1,35 @@
 <app-navbar-manager></app-navbar-manager>
 
+<div class="alert-container">
+  <div *ngFor="let alert of alerts">
+    <ngb-alert [type]="alert.type" [dismissible]="true" (close)="closeAlert(alert)">
+      <ng-container *ngIf="alert.icon">
+        <div class="alert-inner--icon">
+          <i class="{{ alert.icon }}"></i>
+        </div>
+      </ng-container>
+      <span class="alert-inner--text">
+        <strong>{{ alert.strong }} </strong>{{ alert.message }}</span>
+    </ngb-alert>
+  </div>
+</div>
+
+<style>
+  /* signup.component.scss */
+  .alert-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    width: 300px;
+  }
+
+  .alert {
+    margin-bottom: 10px;
+  }
+</style>
+
+
 <section class="section section-lg bg-gradient-default">
   <div class="container pt-lg pb-300">
     <div class="row text-center justify-content-center">
@@ -76,6 +106,12 @@
     <div class="col-lg-10">
       <h2 class="display-3">Horaire de travail de l'employé</h2>
       <h2 class="display-3">{{employees.nom}} {{employees.prenom}}</h2>
+    </div>
+  </div>
+  <div class="row justify-content-center">
+    <div *ngIf="isLoadingHoraire">
+      <!-- Ajoutez ici le code HTML ou le composant de votre icône de chargement -->
+      <i class="fa fa-spinner fa-spin"></i> Chargement des données 
     </div>
   </div>
   <div class="row row-grid mt-5">

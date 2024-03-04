@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 
 import { config } from 'src/app/config/config';
+import { IAlert } from 'src/app/sections/alerts-section/alerts-section.component';
 
 
 @Component({
@@ -16,6 +17,7 @@ export class HoraireEmployeComponent implements OnInit {
 
   focus: boolean = false;
   focus2: boolean = false;
+  isLoadingHoraire: boolean = true;
 
   jour: string = "";
   heureDebut: string = "";
@@ -23,6 +25,9 @@ export class HoraireEmployeComponent implements OnInit {
   afficherAlerteChamp: boolean = false;
   jourArray: string[] = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
 
+
+  public alerts: Array<IAlert> = [];
+  private backup: Array<IAlert>;
 
   employees: any = [];
   horaires: any = [];
@@ -43,6 +48,10 @@ export class HoraireEmployeComponent implements OnInit {
         }
       );
   });
+  }
+
+  closeAlert(alert: IAlert) {
+    this.alerts.splice(this.alerts.indexOf(alert), 0);
   }
 
   addHoraire() {
@@ -70,18 +79,47 @@ export class HoraireEmployeComponent implements OnInit {
 
       this.http.post(config.apiUrl + 'horaire/nouveauHoraire', jsonData, { headers: { 'Content-Type': 'application/json' } })
         .toPromise().then((res) => {
-          alert('Horaire ajouté');
+          // alert('Horaire ajouté');
 
+          this.getHoraire(employeeId);
+          this.getEmploye();
+          this.clearFormHoraire();
+            this.alerts.unshift({
+              id: 0,
+              type: 'success',
+              strong: 'Success! ',
+              message: 'Horaire ajoutée avec succès',
+              icon: 'ni ni-like-2'
+            });
+
+
+      }).catch((error) => {
+        console.error('Error uploading data', error);
+        this.alerts.unshift({
+          id: 0,
+          type: 'danger',
+          strong: 'Error!',
+          message: 'Un problème est survenu lors de l\'ajout d\'une horaire. Réessayer plus tard.',
+          icon: 'ni ni-support-16'
+      });
       });
 
-      this.getEmploye();
+      
     }
+    this.backup = this.alerts.map((alert: IAlert) => Object.assign({}, alert));
     });
   }
 
+  clearFormHoraire() {
+    // Réinitialiser les valeurs des champs du formulaire
+    this.jour = "";
+    this.heureDebut = "";
+    this.heureFin = "";
+  }
+
   getHoraire(employeId) {
-    this.http.get(config.apiUrl + 'horaire/utilisateur/' + employeId )
-      .subscribe(
+    this.http.get(config.apiUrl + 'horaire/utilisateur/' + employeId ).toPromise()
+      .then(
         (data: any) => {
           console.log('Horaire:', data);
           // this.horaires = data;
@@ -96,11 +134,14 @@ export class HoraireEmployeComponent implements OnInit {
           //   console.log("this.horaire: " + horaire.heureDebut);
           // });
 
-        },
-        (error) => {
+        })
+        .catch((error) => {
           console.error('Error:', error);
-        }
-      );
+        })
+        .then(() => {
+          // This block will be executed regardless of success or failure
+          this.isLoadingHoraire = false;
+        });
   }
 
   ngOnInit() {

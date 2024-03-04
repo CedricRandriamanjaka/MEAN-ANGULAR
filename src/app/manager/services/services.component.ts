@@ -23,6 +23,7 @@ export class ServicesComponent implements OnInit {
 
   public files: NgxFileDropEntry[] = [];
 
+  successAjoutService: string = '';
   closeResult: string;
   services: any = [];
   competences: any[] = [];
@@ -81,6 +82,8 @@ export class ServicesComponent implements OnInit {
   @ViewChild('serviceForm') form: NgForm;
   @ViewChild('maSection', { static: false }) maSection!: ElementRef;
   private modalRef: NgbModalRef;
+  isLoadingService: boolean = true;
+  isLoadingCompetence: boolean = true;
 
 
   constructor(private http: HttpClient, private modalService: NgbModal, private router: Router, private route: ActivatedRoute) { }
@@ -98,7 +101,7 @@ export class ServicesComponent implements OnInit {
         reject(error);
       };
 
-      
+
 
       // Lire le contenu de l'image en base64
       reader.readAsDataURL(file);
@@ -308,32 +311,32 @@ export class ServicesComponent implements OnInit {
 
       this.http.post(config.apiUrl + 'services', jsonData, { headers: { 'Content-Type': 'application/json' } })
         .toPromise().then((res: any) => {
-          alert('Service ajoutée');
-          if (res.type === 'success') {
+          console.log('res '+res.success);
+          // alert('Service ajoutée');
+          
+          if (res.success) {
+            this.getServices();
+            this.clearFormService();
             this.alerts.unshift({
               id: 0,
-              type: res.type,
-              strong: res.type + '! ',
-              message: res.messageErreur,
+              type: 'success',
+              strong: 'Success! ',
+              message: 'Service ajoutée avec succès',
               icon: 'ni ni-like-2'
             });
-            this.getServices();
-            // this.router.navigate(['/services'], {
-            //   queryParams: {
-            //     successAjout: "Service ajoutée avec succès"
-            //   }
-            // });
+            
+            
           } else {
             this.alerts.unshift({
               id: 0,
-              type: res.type,
-              strong: res.type + '! ',
-              message: res.messageErreur,
+              type: 'danger',
+              strong: 'Error! ',
+              message: res.message,
               icon: 'ni ni-support-16'
             });
           }
 
-        }).catch ((error) => {
+        }).catch((error) => {
           console.error('Erreur lors de la modification du service:', error);
           this.alerts.unshift({
             id: 0,
@@ -341,7 +344,7 @@ export class ServicesComponent implements OnInit {
             strong: 'Error!',
             message: 'Un problème est survenu lors de l\'ajout d\'un service. Réessayer plus tard.',
             icon: 'ni ni-support-16'
-        });
+          });
         });
 
 
@@ -407,6 +410,20 @@ export class ServicesComponent implements OnInit {
 
   }
 
+  clearFormService() {
+    // Réinitialiser les valeurs des champs du formulaire
+    this.intitule = '';
+    this.description = '';
+    this.prix = '';
+    this.duree = '';
+    this.commission = '';
+    this.model = null; // Réinitialiser la date de début
+    this.model1 = null; // Réinitialiser la date de fin
+  
+    // Réinitialiser les compétences sélectionnées
+    this.competences.forEach((competence) => (competence.isChecked = false));
+  }
+
   toggleCheckbox(competence: any) {
     console.log(competence.isChecked)
     competence.isChecked = !competence.isChecked;
@@ -414,29 +431,34 @@ export class ServicesComponent implements OnInit {
 
   getServices() {
     this.http.get(config.apiUrl + 'services')
-      .subscribe(
-        (data) => {
-          console.log('Data:', data);
-          this.services = data;
-        },
-        (error) => {
-          console.error('Error:', error);
-        }
-      );
+      .toPromise()
+      .then((data) => {
+        console.log('Data:', data);
+        this.services = data;
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      })
+      .then(() => {
+        // This block will be executed regardless of success or failure
+        this.isLoadingService = false;
+      });
   }
 
   getCompetences() {
-    this.http.get<any[]>(config.apiUrl + 'competences')
-      .subscribe(
+    this.http.get<any[]>(config.apiUrl + 'competences').toPromise()
+      .then(
         (data) => {
           console.log('Data:', data);
           this.competences = data.map(competence => ({ ...competence, isChecked: false }));
 
-        },
-        (error) => {
+        }).catch((error) => {
           console.error('Error:', error);
-        }
-      );
+        })
+      .then(() => {
+        // This block will be executed regardless of success or failure
+        this.isLoadingCompetence = false;
+      });
   }
 
   // open(content, type, modalDimension, service) {
@@ -533,9 +555,9 @@ export class ServicesComponent implements OnInit {
   }
 
   // Fonction pour fermer une alerte
-closeAlert(alert: IAlert) {
-  this.alerts.splice(this.alerts.indexOf(alert), 0);
-}
+  closeAlert(alert: IAlert) {
+    this.alerts.splice(this.alerts.indexOf(alert), 0);
+  }
 
   addCompetence() {
     var dataObject = {
@@ -545,15 +567,16 @@ closeAlert(alert: IAlert) {
     var jsonData = JSON.stringify(dataObject);
     console.log('jsonData:' + jsonData);
     this.http.post(config.apiUrl + 'competences', jsonData, { headers: { 'Content-Type': 'application/json' } })
-    .toPromise().then((res: any) => {
-      alert('Compétences ajoutées avec succès');
-      this.getServices();
-      this.getCompetences();
-      this.modalRef.close();
+      .toPromise().then((res: any) => {
+        
+        this.getServices();
+        this.getCompetences();
+        // this.modalRef.close();
+        alert('Compétences ajoutées avec succès');
 
-    }), error => {
-      alert('Erreur lors de l\'ajout de la compétence');
-    };
+      }), error => {
+        alert('Erreur lors de l\'ajout de la compétence');
+      };
   }
 
   private getDismissReason(reason: any): string {
@@ -592,30 +615,41 @@ closeAlert(alert: IAlert) {
       console.log('dateFinField:', this.dateFinField);
       console.log('Competences:', this.competencesField);
 
-        var dataObject = {
-          nomService: this.intituleField,
-          description: this.descriptionField,
-          prix: this.prixField,
-          duree: this.dureeField,
-          commission: this.commissionField,
-          dateDebut: this.dateDebutField,
-          dateFin: this.dateFinField,
-          competences: JSON.stringify(this.competencesField)
-        };
+      var dataObject = {
+        nomService: this.intituleField,
+        description: this.descriptionField,
+        prix: this.prixField,
+        duree: this.dureeField,
+        commission: this.commissionField,
+        dateDebut: this.dateDebutField,
+        dateFin: this.dateFinField,
+        competences: JSON.stringify(this.competencesField)
+      };
 
       var jsonData = JSON.stringify(dataObject);
       console.log('jsonData:' + jsonData);
 
-      this.http.put(config.apiUrl + 'services/'+ this.idService, jsonData, { headers: { 'Content-Type': 'application/json' } })
+      this.http.put(config.apiUrl + 'services/' + this.idService, jsonData, { headers: { 'Content-Type': 'application/json' } })
         .toPromise().then((res) => {
           console.log('Data uploaded successfully', res);
-          alert('Service modifie');
           this.getServices();
+
+          // alert('Service modifie');
+          this.alerts.unshift({
+            id: 0,
+            type: 'success',
+            strong: 'Success! ',
+            message: 'Service modifiée avec succès',
+            icon: 'ni ni-like-2'
+          });
+          
           this.estEnModeModification = false;
 
-      }).catch ((error) => {
-        console.error('Erreur lors de la modification du service:', error);
-      });
+        }).catch((error) => {
+          console.error('Erreur lors de la modification du service:', error);
+        });
+
+        this.backup = this.alerts.map((alert: IAlert) => Object.assign({}, alert));
 
 
       // var formData = new FormData();
@@ -661,9 +695,21 @@ closeAlert(alert: IAlert) {
 
     this.http.delete(config.apiUrl + 'services/' + serviceId)
       .toPromise().then((res) => {
+        
+        // alert('Le service a bien été supprime');
+        this.alerts.unshift({
+          id: 0,
+          type: 'success',
+          strong: 'Success! ',
+          message: 'Service supprimée avec succès',
+          icon: 'ni ni-like-2'
+        });
         this.getServices();
-        alert('Le service a bien été supprime');
       });
+
+      this.backup = this.alerts.map((alert: IAlert) => Object.assign({}, alert));
+
+
   }
 
   ngOnInit() {
